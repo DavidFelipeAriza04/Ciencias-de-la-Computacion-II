@@ -1,3 +1,12 @@
 **/venv/
 **/__pycache__/
-Busquedas/Amazon-Products.csv
+*.csv
+
+
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.bmp
+*.tiff
+*.ico
