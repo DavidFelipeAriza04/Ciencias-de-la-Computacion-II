@@ -2,11 +2,11 @@ import pandas as pd
 from Producto import Producto
 import time
 
-def busqueda_binaria(elemento, arreglo, key=None):
+def busqueda_binaria(elemento, arreglo, key):
     inicio, final = 0, len(arreglo) - 1
     while inicio <= final:
         medio = (inicio + final) // 2
-        medio_elemento = key(arreglo[medio]) if key else arreglo[medio]
+        medio_elemento = key(arreglo[medio])
         if elemento == medio_elemento:
             return medio
         elif elemento > medio_elemento:
@@ -15,11 +15,10 @@ def busqueda_binaria(elemento, arreglo, key=None):
             final = medio - 1
     return -1
 
-def busqueda_secuencial(elemento, arreglo, key=None):
+def busqueda_secuencial(elemento, arreglo, key):
     for indice, a in enumerate(arreglo):
-        if key:
-            if elemento == key(a):
-                return indice
+        if elemento == key(a):
+            return indice
         else:
             if elemento == a:
                 return indice
@@ -41,9 +40,9 @@ def menu_obtener_producto(item_buscar, productos, key):
     print(f"Tiempo de búsqueda: {tiempo:.4f} segundos")
 
 def obtener_producto(item_buscar, busqueda, productos, key):
-    start = time.time()
+    start = time.perf_counter() 
     indice = busqueda(item_buscar, productos, key)
-    end = time.time()
+    end = time.perf_counter() 
     
     # Verifica si se encontró el índice
     if indice != -1:
@@ -62,8 +61,11 @@ def cargar_productos():
     df = pd.read_csv("Amazon-Products.csv")
 
     productos = []
+    indice = 0
     for index,row in df.iterrows():
-        productos.append(Producto(index, row["name"],row["actual_price"],row["main_category"]))
+        productos.append(Producto(indice, row["name"],row["actual_price"],row["main_category"]))
+        indice+=1
+    print(len(productos))
     return productos
 
 def main():
