@@ -1,5 +1,5 @@
 class Producto:
-    def __init__(self, id: str, name: str, price: float, description: str) -> None:
+    def __init__(self, id: str, name: str, price: float, description: str):
         self._id = id
         self._name = name
         self._price = price
@@ -19,14 +19,14 @@ class Producto:
         return self._description
 
     # Setters
-    def set_id(self, id: str) -> None:
+    def set_id(self, id: str):
         self._id = id
 
-    def set_name(self, name: str) -> None:
+    def set_name(self, name: str):
         self._name = name
 
-    def set_price(self, price: float) -> None:
+    def set_price(self, price: float):
         self._price = price
 
-    def set_description(self, description: str) -> None:
+    def set_description(self, description: str):
         self._description = description
