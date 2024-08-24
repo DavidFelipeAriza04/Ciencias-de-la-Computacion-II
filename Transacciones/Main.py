@@ -2,7 +2,6 @@ from Transaccion import Transaccion
 import Busqueda
 from Producto import Producto
 from Persona import Persona
-import tkinter as tk
 from Ventana import Ventana
 from datetime import datetime
 import random as rnd
@@ -169,7 +168,4 @@ def main():
 
 
 if __name__ == "__main__":
-    # ventana_principal = tk.Tk()
-    # app = Ventana(ventana_principal)
     main()
-    # app.mainloop()
