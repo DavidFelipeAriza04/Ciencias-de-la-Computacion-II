@@ -57,7 +57,9 @@ class Transaccion:
     def imprimirTransaccion(self):
         print(
             f"Transaccion Anterior: {self.transaccionAnterior}\nTransaccion: {self.id}\nFecha: {self.date}\nProducto:{self.product.get_id()}: {self.product.get_name()}\nPrecio: {self.price}\nCliente: {self.customer}\nVendedor: {self.seller}"
+            , '\n---'
         )
+        if not (self.siguienteTransaccion == None): self.siguienteTransaccion.imprimirTransaccion() 
 
     def set_SiguienteTransaccion(self, siguienteTransaccion):
         if self.siguienteTransaccion is None:
