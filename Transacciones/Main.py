@@ -2,7 +2,6 @@ from Transaccion import Transaccion
 import Busqueda
 from Producto import Producto
 from Persona import Persona
-from Ventana import Ventana
 from datetime import datetime
 import random as rnd
 

@@ -75,7 +75,7 @@ def imprimir_producto(producto):
 
 
 def cargar_productos():
-    df = pd.read_csv("Busquedas/Amazon-Products.csv")
+    df = pd.read_csv("Amazon-Products.csv")
 
     productos = []
     indice = 0
