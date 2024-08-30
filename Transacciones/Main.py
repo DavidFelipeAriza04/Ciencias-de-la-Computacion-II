@@ -39,10 +39,10 @@ def main():
             )
             op_buscar = int(input())
             if op_buscar == 1:
-                item_buscar = int(input("Ingresa el id: "))
                 productos.sort(key=lambda p: p.get_id())
                 producto = None
                 while producto is None:
+                    item_buscar = int(input("Ingresa el id: "))
                     producto = Busqueda.obtener_producto(
                         item_buscar,
                         Busqueda.busqueda_binaria,
@@ -51,16 +51,17 @@ def main():
                     )
 
             elif op_buscar == 2:
-                item_buscar = input("Ingresa el nombre: ")
                 productos.sort(key=lambda p: p.get_name())
                 producto = None
                 while producto is None:
+                    item_buscar = input("Ingresa el nombre: ")
                     producto = Busqueda.obtener_producto(
                         item_buscar,
                         Busqueda.busqueda_binaria,
                         productos,
                         key=lambda p: p.get_name(),
                     )
+                    if producto == None: print(f"El producto {item_buscar} no existe")
             Busqueda.imprimir_producto(producto)
             cliente = Persona(
                 input("Nombre del cliente: "), int(input("Id del cliente: "))
@@ -134,8 +135,16 @@ def main():
                 array4[hash_value] = array5[hash_value]
             print("Transaccion guardada en el array: ", num_array)
         if op == 2:
-            print("Ingrese el id de la transaccion a buscar: ")
-            id_transaccion = int(input())
+            search_by = int(input("Buscar por:\n"
+            +    "1. Id\n"
+             +   "2. Nombre\n"))
+            if search_by == 1:
+                print("Ingrese el id de la transaccion a buscar: ")
+                id_transaccion = int(input())
+            else:
+                name_transaccion = str(input("Ingrese el nombre del producto: "))
+                id_transaccion = hash(len(productos), name_transaccion)
+
             if array1[id_transaccion] is not None:
                 array1[id_transaccion].imprimirTransaccion()
             else:
