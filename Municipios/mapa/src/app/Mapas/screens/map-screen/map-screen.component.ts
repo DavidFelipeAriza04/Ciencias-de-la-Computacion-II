@@ -1,6 +1,8 @@
 import { Component, AfterViewInit } from '@angular/core';
+import { Title } from '@angular/platform-browser';
 import * as L from 'leaflet'
 
+const url = "http://127.0.0.1:8000/"
 @Component({
   selector: 'app-map-screen',
   standalone: true,
@@ -35,7 +37,20 @@ export class MapScreenComponent implements AfterViewInit{
   }
 
   private drawLine(): void {
-    // Coordenadas de Bogotá y Medellín
+    // Coordenadas de los municipios 
+    fetch(url + "Municipios/")
+    .then(response => response.json())
+    .then(data => {
+      data.forEach((municipio: any) => {
+        const coords: L.LatLngExpression = [municipio["latitud"], municipio["longitud"]];
+        L.marker(coords, {
+          title: municipio["nombre"],
+          alt: municipio["nombre"],
+          riseOnHover: true
+        }).addTo(this.map)
+      })
+    })
+    .catch(error => console.log(error))
     const bogotaCoords: L.LatLngExpression = [4.6097, -74.0817];
     const medellinCoords: L.LatLngExpression = [6.2442, -75.5812];
 
@@ -47,4 +62,6 @@ export class MapScreenComponent implements AfterViewInit{
     // Ajustar el mapa para que la línea se vea completamente
     this.map.fitBounds(polyline.getBounds());
   }
+
+  
 }

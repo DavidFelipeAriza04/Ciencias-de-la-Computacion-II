@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mapa</title>
+    <link rel="stylesheet" href="index.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+</head>
+
+<body>
+    <div id="map"></div>
+    <div id="municipios">
+        <div id="origenYdestino">
+            <input type="text" disabled class="municipio">
+            <input type="text" disabled class="municipio">
+        </div>
+        <button id="calcular">Calcular</button>
+        <input type="text" id="distancia" disabled style="margin-top: 10px;">
+    </div>
+</body>
+<script>
+    var map = L.map('map', {
+        center: [5.387499, -74.132269],
+        zoom: 5
+    });
+
+    origen = true
+
+    const url = "http://127.0.0.1:8000/"
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 18,
+        minZoom: 3,
+        attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+    }).addTo(map);
+
+    municipios = []
+
+    fetch(url + "Municipios/")
+        .then(response => response.json())
+        .then(data => {
+            data.forEach((municipio) => {
+                L.marker([municipio["latitud"], municipio["longitud"]], {
+                    title: municipio["nombre"],
+                    alt: municipio["nombre"],
+                    riseOnHover: true
+                }).addTo(this.map).on('click', function (e) {
+                    if (origen) {
+                        document.querySelector("#origenYdestino").children[0].value = municipio["nombre"]
+                        origen = false
+                    } else {
+                        document.querySelector("#origenYdestino").children[1].value = municipio["nombre"]
+                        origen = true
+                    }
+                }).bindPopup(municipio["nombre"]);
+                municipios.push(municipio)
+            })
+            // console.log(municipios)
+        })
+        .catch(error => console.log(error))
+
+    fetch(url + "Municipios/")
+        .then(response => response.json())
+        .then(data => {
+            contador = 0
+            data.forEach((municipio) => {
+                for (let i = contador; i < 30; i++) {
+                    // console.log(municipio["nombre"] + " ---- " + municipios[i]["nombre"].replaceAll(" ", "") + "Conexion" + " ---- " + municipio[municipios[i]["nombre"].replaceAll(" ", "") + "Conexion"])
+                    if (municipio[municipios[i]["nombre"].replaceAll(" ", "") + "Conexion"] != 0) {
+                        var distance = municipio[municipios[i]["nombre"].replaceAll(" ", "") + "Conexion"];
+                        // console.log(distance)
+                        linea = L.polyline([
+                            [municipio["latitud"], municipio["longitud"]],
+                            [municipios[i]["latitud"], municipios[i]["longitud"]]
+                        ]).addTo(this.map)
+                        // linea.bindTooltip(distance.toFixed(2) + ' Km', {permanent: true, className: "distance-tooltip", offset: [0, -10]}).openTooltip();
+                    }
+                }
+                contador++
+            })
+        })
+        .catch(error => console.log(error))
+
+    document.querySelector("#calcular").addEventListener("click", () => {
+        fetch(url + "/Municipios/", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                "origen": municipios.find(municipio => municipio["nombre"] == document.querySelector("#origenYdestino").children[0].value),
+                "destino": municipios.find(municipio => municipio["nombre"] == document.querySelector("#origenYdestino").children[1].value)
+            })
+        })
+            .then(response => response.json())
+            .then(data => {
+                console.log(data)
+                document.getElementById("distancia").value = data["distancia"]
+            })
+            .catch(error => console.log(error))
+    })
+</script>
+
+</html>
