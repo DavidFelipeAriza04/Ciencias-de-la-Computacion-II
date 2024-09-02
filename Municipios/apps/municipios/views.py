@@ -3,6 +3,7 @@ from .models import Municipio
 from .serializers import MunicipioSerializer
 from rest_framework.response import Response
 from django.db.models import Q
+from Algoritmos.Algoritmos import GBFS
 
 diccionarioPosiciones = {
     0: "Leticia",
@@ -53,7 +54,7 @@ class MunicipiosViewSet(viewsets.ModelViewSet):
                 municipio = linea.split(", ")
                 if not self.queryset.count() == 30:
                     Municipio.objects.create(
-                        nombre=municipio[0],
+                        nombre=municipio[0].replace("_", " "),
                         latitud=municipio[1],
                         longitud=municipio[2],
                         LeticiaConexion=municipio[3],
@@ -72,7 +73,7 @@ class MunicipiosViewSet(viewsets.ModelViewSet):
                         MonteriaConexion=municipio[16],
                         IniridaConexion=municipio[17],
                         RiohachaConexion=municipio[18],
-                        SanJoseDelGuaviareConexion=municipio[19],
+                        SanJosedelGuaviareConexion=municipio[19],
                         NeivaConexion=municipio[20],
                         SantaMartaConexion=municipio[21],
                         VillavicencioConexion=municipio[22],
@@ -99,19 +100,20 @@ class MunicipiosViewSet(viewsets.ModelViewSet):
 
         with open("Matriz.txt", "w") as archivo:
             # Escribe la fila de encabezados
+            archivo.write("x")
             archivo.write(
-                " " * (max_ancho + 2)
+                " " * (max_ancho + 1)
             )  # Espacios en blanco para la columna de nombres
             for i in range(30):
                 archivo.write(
-                    f"{diccionarioPosiciones[i].ljust(max_ancho + 2)}"
+                    f"{diccionarioPosiciones[i].replace(' ', '_').ljust(max_ancho + 2)}"
                 )  # Encabezados de columna alineados
             archivo.write("\n")
 
             # Escribe las filas de la matriz
             for i in range(30):
                 archivo.write(
-                    f"{diccionarioPosiciones[i].ljust(max_ancho + 2)}"
+                    f"{diccionarioPosiciones[i].replace(' ', '_').ljust(max_ancho + 2)}"
                 )  # Nombre de la fila alineado
                 for j in range(30):
                     # print(matriz[i][col])
@@ -123,11 +125,15 @@ class MunicipiosViewSet(viewsets.ModelViewSet):
         return super().list(request, *args, **kwargs)
 
     def create(self, request, *args, **kwargs):
-        origen = Municipio.objects.filter(Q(nombre=request.data.get("origen")["nombre"]))
-        destino = Municipio.objects.filter(Q(nombre=request.data.get("destino")["nombre"]))
-        print(origen.values().first()["nombre"])
-        print(f"{origen.values().first()['latitud']} -- {origen.values().first()['longitud']}")
-        print(destino.values().first()["nombre"])  
-        print(f"{destino.values().first()['latitud']} -- {destino.values().first()['longitud']}")
-        distancia = 200
-        return Response({"distancia": distancia})
+        origen = Municipio.objects.filter(
+            Q(nombre=request.data.get("origen")["nombre"])
+        )
+        destino = Municipio.objects.filter(
+            Q(nombre=request.data.get("destino")["nombre"])
+        )
+        municipios, distancia = GBFS(
+            origen.values().first()["nombre"].replace(" ","_"), destino.values().first()["nombre"].replace(" ", "_")
+        )
+        print(municipios, end="\n")
+        print(distancia)
+        return Response({"recorrido": municipios, "distancia": distancia})

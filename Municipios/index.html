@@ -20,6 +20,7 @@
             <input type="text" disabled class="municipio">
         </div>
         <button id="calcular">Calcular</button>
+        <textarea name="recorrido" id="recorrido" disabled></textarea>
         <input type="text" id="distancia" disabled style="margin-top: 10px;">
     </div>
 </body>
@@ -40,50 +41,52 @@
 
     municipios = []
 
-    fetch(url + "Municipios/")
-        .then(response => response.json())
-        .then(data => {
-            data.forEach((municipio) => {
-                L.marker([municipio["latitud"], municipio["longitud"]], {
-                    title: municipio["nombre"],
-                    alt: municipio["nombre"],
-                    riseOnHover: true
-                }).addTo(this.map).on('click', function (e) {
-                    if (origen) {
-                        document.querySelector("#origenYdestino").children[0].value = municipio["nombre"]
-                        origen = false
-                    } else {
-                        document.querySelector("#origenYdestino").children[1].value = municipio["nombre"]
-                        origen = true
-                    }
-                }).bindPopup(municipio["nombre"]);
-                municipios.push(municipio)
+    function cargarMunicipios() {
+        fetch(url + "Municipios/")
+            .then(response => response.json())
+            .then(data => {
+                data.forEach((municipio) => {
+                    L.marker([municipio["latitud"], municipio["longitud"]], {
+                        title: municipio["nombre"],
+                        alt: municipio["nombre"],
+                        riseOnHover: true
+                    }).addTo(this.map).on('click', function (e) {
+                        if (origen) {
+                            document.querySelector("#origenYdestino").children[0].value = municipio["nombre"]
+                            origen = false
+                        } else {
+                            document.querySelector("#origenYdestino").children[1].value = municipio["nombre"]
+                            origen = true
+                        }
+                    }).bindPopup(municipio["nombre"]);
+                    municipios.push(municipio)
+                })
+                // console.log(municipios)
             })
-            // console.log(municipios)
-        })
-        .catch(error => console.log(error))
+            .catch(error => console.log(error))
 
-    fetch(url + "Municipios/")
-        .then(response => response.json())
-        .then(data => {
-            contador = 0
-            data.forEach((municipio) => {
-                for (let i = contador; i < 30; i++) {
-                    // console.log(municipio["nombre"] + " ---- " + municipios[i]["nombre"].replaceAll(" ", "") + "Conexion" + " ---- " + municipio[municipios[i]["nombre"].replaceAll(" ", "") + "Conexion"])
-                    if (municipio[municipios[i]["nombre"].replaceAll(" ", "") + "Conexion"] != 0) {
-                        var distance = municipio[municipios[i]["nombre"].replaceAll(" ", "") + "Conexion"];
-                        // console.log(distance)
-                        linea = L.polyline([
-                            [municipio["latitud"], municipio["longitud"]],
-                            [municipios[i]["latitud"], municipios[i]["longitud"]]
-                        ]).addTo(this.map)
-                        // linea.bindTooltip(distance.toFixed(2) + ' Km', {permanent: true, className: "distance-tooltip", offset: [0, -10]}).openTooltip();
+        fetch(url + "Municipios/")
+            .then(response => response.json())
+            .then(data => {
+                contador = 0
+                data.forEach((municipio) => {
+                    for (let i = contador; i < 30; i++) {
+                        // console.log(municipio["nombre"] + " ---- " + municipios[i]["nombre"].replaceAll(" ", "") + "Conexion" + " ---- " + municipio[municipios[i]["nombre"].replaceAll(" ", "") + "Conexion"])
+                        if (municipio[municipios[i]["nombre"].replaceAll(" ", "") + "Conexion"] != 0) {
+                            var distance = municipio[municipios[i]["nombre"].replaceAll(" ", "") + "Conexion"];
+                            // console.log(distance)
+                            linea = L.polyline([
+                                [municipio["latitud"], municipio["longitud"]],
+                                [municipios[i]["latitud"], municipios[i]["longitud"]]
+                            ]).addTo(this.map)
+                            // linea.bindTooltip(distance.toFixed(2) + ' Km', {permanent: true, className: "distance-tooltip", offset: [0, -10]}).openTooltip();
+                        }
                     }
-                }
-                contador++
+                    contador++
+                })
             })
-        })
-        .catch(error => console.log(error))
+            .catch(error => console.log(error))
+    }
 
     document.querySelector("#calcular").addEventListener("click", () => {
         fetch(url + "/Municipios/", {
@@ -99,10 +102,13 @@
             .then(response => response.json())
             .then(data => {
                 console.log(data)
+                document.getElementById("recorrido").value = data["recorrido"].join(" -> ").replaceAll("_", " ")
                 document.getElementById("distancia").value = data["distancia"]
             })
             .catch(error => console.log(error))
     })
+    window.onload = cargarMunicipios()
+
 </script>
 
 </html>

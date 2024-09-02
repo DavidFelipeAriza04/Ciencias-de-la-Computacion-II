@@ -52,3 +52,10 @@
     font-size: 20px; /* Tamaño aumentado al hacer hover */
     font-weight: bold;
 }
+
+#recorrido{
+    margin-top: 10px;
+    height: 120px;
+    overflow-y: scroll;
+    resize: none;
+}

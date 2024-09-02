@@ -21,7 +21,7 @@ class Municipio(models.Model):
     MonteriaConexion = models.FloatField(blank=True, null=True)
     IniridaConexion = models.FloatField(blank=True, null=True)
     RiohachaConexion = models.FloatField(blank=True, null=True)
-    SanJoseDelGuaviareConexion = models.FloatField(blank=True, null=True)
+    SanJosedelGuaviareConexion = models.FloatField(blank=True, null=True)
     NeivaConexion = models.FloatField(blank=True, null=True)
     SantaMartaConexion = models.FloatField(blank=True, null=True)
     VillavicencioConexion = models.FloatField(blank=True, null=True)
