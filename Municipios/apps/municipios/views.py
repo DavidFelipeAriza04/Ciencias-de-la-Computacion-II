@@ -3,7 +3,7 @@ from .models import Municipio
 from .serializers import MunicipioSerializer
 from rest_framework.response import Response
 from django.db.models import Q
-from Algoritmos.Algoritmos import GBFS
+from Algoritmos.Algoritmos import busqueda
 
 diccionarioPosiciones = {
     0: "Leticia",
@@ -131,8 +131,8 @@ class MunicipiosViewSet(viewsets.ModelViewSet):
         destino = Municipio.objects.filter(
             Q(nombre=request.data.get("destino")["nombre"])
         )
-        municipios, distancia = GBFS(
-            origen.values().first()["nombre"].replace(" ","_"), destino.values().first()["nombre"].replace(" ", "_")
+        municipios, distancia = busqueda(
+            origen.values().first()["nombre"].replace(" ","_"), destino.values().first()["nombre"].replace(" ", "_"),"A*"
         )
         print(municipios, end="\n")
         print(distancia)

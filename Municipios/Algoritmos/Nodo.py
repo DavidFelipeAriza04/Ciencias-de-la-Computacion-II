@@ -11,11 +11,13 @@ class Nodo:
 
 
 class Pueblo():
-    def __init__(self,nombre,latitud,longitud,heuristica,coordenadas):
+    def __init__(self,nombre,latitud,longitud,h,g,coordenadas):
         self.nombre = nombre
         self.latitud = latitud
         self.longitud = longitud
-        self.heuristica = heuristica
+        self.g = g
+        self.h = h
+        self.heuristica = h+g
         self.x, self.y = coordenadas
 
 

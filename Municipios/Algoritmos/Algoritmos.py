@@ -2,6 +2,72 @@ import heapq
 from Algoritmos.Nodo import Pueblo, Nodo
 from math import radians, cos, sin, asin, sqrt
 
+def busqueda(origen, destino, metodo='GBFS'):
+    # Leer y procesar la matriz y los pueblos
+    with open("Matriz.txt", "r") as f:
+        matriz = crearMatriz(f)
+    arreglo_pueblos = crearArregloPueblos(matriz)
+
+    # Obtener coordenadas del destino y del pueblo inicial
+    cordDestino = buscarCoordMunicipio(destino, matriz)
+    puebloInicial = buscarMunicipio(origen, arreglo_pueblos)
+
+    # Calcular heurística inicial
+    heuristica_inicial = calculaHeristica(puebloInicial, arreglo_pueblos, destino, 0)
+
+    # Crear nodo inicial
+    start = Nodo(
+        puebloInicial,
+        None,
+        buscarCoordMunicipio(origen, matriz),
+        heuristica_inicial,
+    )
+
+    # Inicializar la frontera (cola de prioridad) y el conjunto explorado
+    frontera = []
+    heapq.heapify(frontera)
+    heapq.heappush(frontera, start)
+    conjuntoExplorado = set()
+
+    while True:
+        if not frontera:
+            raise Exception("No solution")
+
+        nodo = heapq.heappop(frontera)
+
+        if comprobarDestino((nodo.estado.x, nodo.estado.y), cordDestino):
+            return construir_ruta(nodo, start)
+
+        conjuntoExplorado.add(nodo.estado)
+
+        cordsPueblosAdy = buscarPueblosPosibles(matriz, nodo.estado.x)
+        pueblosAdyacentes = []
+
+        for cordPueblo in cordsPueblosAdy:
+            pueblo = buscarMunicipio(matriz[0][cordPueblo], arreglo_pueblos)
+
+            # Calcular heurística y costo según el método
+            if metodo == 'A*':
+                gn = nodo.estado.g + float(matriz[nodo.estado.x][pueblo.y])
+                heuristica = calculaHeristica(pueblo, arreglo_pueblos, destino, gn)
+            else:  # GBFS
+                gn = 0
+                heuristica = calculaHeristica(pueblo, arreglo_pueblos, destino, 0)
+
+            pueblo.heuristica = heuristica
+            pueblo.h = calculaHeristica(pueblo, arreglo_pueblos, destino, 0)
+            pueblo.g = gn
+            pueblosAdyacentes.append(pueblo)
+
+        for pueblo in pueblosAdyacentes:
+            if pueblo not in conjuntoExplorado and not estado_en_frontera(frontera, pueblo):
+                nodo_hijo = Nodo(
+                    pueblo,
+                    nodo,
+                    (pueblo.x, pueblo.y),
+                    pueblo.heuristica,
+                )
+                heapq.heappush(frontera, nodo_hijo)
 
 def crearMatriz(f):
     matriz_adyacencia = [linea.split() for linea in f if linea.strip()]
@@ -34,13 +100,24 @@ def crearArregloPueblos(matrizAdyacencia):
             atributos_pueblo[0].strip(),
             float(atributos_pueblo[1]),
             float(atributos_pueblo[2]),
-            None,
+            0,0,
             buscarCoordMunicipio(atributos_pueblo[0].strip(), matrizAdyacencia),
         )
 
         arreglo_pueblos.append(pueblo)
     return arreglo_pueblos
 
+def calculaHeristica(
+    pueblo,
+    arregloPueblos,
+    destino,
+    gn
+):
+    puebloDestino = buscarMunicipio(destino, arregloPueblos)
+    latD = puebloDestino.latitud
+    longD = puebloDestino.longitud
+
+    return distance(pueblo.latitud, latD, pueblo.longitud, longD)+gn
 
 def distance(lat1, lat2, lon1, lon2):
 
@@ -69,182 +146,34 @@ def buscarMunicipio(nombre, arregloPueblos):
     return next((pueblo for pueblo in arregloPueblos if pueblo.nombre == nombre), None)
 
 
-def calculaHeristica(
-    pueblo,
-    arregloPueblos,
-    destino,
-):
-    puebloDestino = buscarMunicipio(destino, arregloPueblos)
-    latD = puebloDestino.latitud
-    longD = puebloDestino.longitud
-
-    pueblo.heuristica = distance(pueblo.latitud, latD, pueblo.longitud, longD)
-
-
-def calculaHeristicaA(pueblo, arregloPueblos, destino, costoActual):
-    puebloDestino = buscarMunicipio(destino, arregloPueblos)
-    latD = puebloDestino.latitud
-    longD = puebloDestino.longitud
-
-    pueblo.heuristica = (
-        distance(pueblo.latitud, latD, pueblo.longitud, longD) + costoActual
-    )
-
-
 def buscarPueblosPosibles(matrizAdyacencia, fila):
     linea = matrizAdyacencia[fila]
-    pueblosAdyacentes = []
-
-    for i, elemento in enumerate(linea[1:], start=1):
-        if elemento:
-            if float(elemento) != 0:
-                pueblosAdyacentes.append(i)
-
+    pueblosAdyacentes = [i for i,elemento in enumerate(linea[1:],1) if elemento != '0']
     return pueblosAdyacentes
 
 
 def estado_en_frontera(frontera, estado):
     return any(nodo.estado == estado for nodo in frontera)
 
+def construir_ruta(nodo,start):
+    nodos = []
+    while nodo.padre is not None:
+        nodos.append(nodo.estado)
+        nodo = nodo.padre
+    nodos.append(start.estado)
+    nodos.reverse()
 
-def GBFS(origen, destino):
-    f = open("Matriz.txt", "r")
-    matriz = crearMatriz(f)
-    arreglo_pueblos = crearArregloPueblos(matriz)
+    distancia_total = 0
+    for i in range(0, len(nodos) - 1):
+        distancia_total += distance(nodos[i].latitud, nodos[i + 1].latitud, nodos[i].longitud, nodos[i + 1].longitud)
 
-    cordDestino = buscarCoordMunicipio(destino, matriz)
+    nombres_municipios = [municipio.nombre for municipio in nodos]
 
-    puebloInicial = buscarMunicipio(origen, arreglo_pueblos)
-    calculaHeristica(puebloInicial, arreglo_pueblos, destino)
-
-    start = Nodo(
-        puebloInicial,
-        None,
-        buscarCoordMunicipio(origen, matriz),
-        puebloInicial.heuristica,
-    )
-    frontera = []
-    heapq.heapify(frontera)
-    heapq.heappush(frontera, start)
-    conjuntoExplorado = set()
-
-    while True:
-        if not frontera:
-            print(frontera)
-            raise Exception("No solution")
-
-        nodo = heapq.heappop(frontera)
-
-        if comprobarDestino((nodo.estado.x, nodo.estado.y), cordDestino):
-            nodos = []
-            while nodo.padre is not None:
-                nodos.append(nodo.estado)
-                nodo = nodo.padre
-
-            distancia_total = 0
-            nodos.append(start.estado)
-            nodos.reverse()
-            for i in range(0, len(nodos) - 1):
-                distancia_total += distance(nodos[i].latitud, nodos[i + 1].latitud, nodos[i].longitud, nodos[i + 1].longitud)
-
-            nombres_municipios = []
-            for municipio in nodos:
-                nombres_municipios.append(municipio.nombre)
-            return nombres_municipios, distancia_total
-
-        conjuntoExplorado.add(nodo.estado)
-
-        cordsPueblosAdy = buscarPueblosPosibles(matriz, nodo.estado.x)
-        pueblosAdyacentes = []
-
-        for cordPueblo in cordsPueblosAdy:
-            pueblo = buscarMunicipio(matriz[0][cordPueblo], arreglo_pueblos)
-            calculaHeristica(pueblo, arreglo_pueblos, destino)
-            pueblosAdyacentes.append(pueblo)
-
-        for pueblo in pueblosAdyacentes:
-            if pueblo not in conjuntoExplorado and not estado_en_frontera(
-                frontera, pueblo
-            ):
-                nodo_hijo = Nodo(
-                    pueblo,
-                    nodo,
-                    buscarCoordMunicipio(pueblo.nombre, matriz),
-                    pueblo.heuristica,
-                )
-                heapq.heappush(frontera, nodo_hijo)
+    return nombres_municipios, distancia_total
 
 
-def A(origen, destino):
-    f = open("Matriz.txt", "r")
-    matriz = crearMatriz(f)
-    arreglo_pueblos = crearArregloPueblos(matriz)
 
-    cordDestino = buscarCoordMunicipio(destino, matriz)
-    costoActual = 0
-
-    puebloInicial = buscarMunicipio(origen, arreglo_pueblos)
-    calculaHeristicaA(puebloInicial, arreglo_pueblos, destino, costoActual)
-
-    start = Nodo(
-        puebloInicial,
-        None,
-        buscarCoordMunicipio(origen, matriz),
-        puebloInicial.heuristica,
-    )
-    frontera = []
-    heapq.heapify(frontera)
-    heapq.heappush(frontera, start)
-    conjuntoExplorado = set()
-
-    while True:
-        if not frontera:
-            raise Exception("No solution")
-
-        nodo = heapq.heappop(frontera)
-
-        if comprobarDestino((nodo.estado.x, nodo.estado.y), cordDestino):
-            nodos = []
-            while nodo.padre is not None:
-                nodos.append(nodo.estado)
-                nodo = nodo.padre
-
-            nodos.append(start.estado)
-            nodos.reverse()
-
-            return nodos
-
-        conjuntoExplorado.add(nodo.estado)
-
-        cordsPueblosAdy = buscarPueblosPosibles(matriz, nodo.estado.x)
-        pueblosAdyacentes = []
-
-        for cordPueblo in cordsPueblosAdy:
-            pueblo = buscarMunicipio(matriz[0][cordPueblo], arreglo_pueblos)
-            calculaHeristicaA(
-                pueblo,
-                arreglo_pueblos,
-                destino,
-                costoActual + float(matriz[pueblo.x][nodo.estado.y]),
-            )
-            pueblosAdyacentes.append(pueblo)
-
-        for pueblo in pueblosAdyacentes:
-            if pueblo not in conjuntoExplorado and not estado_en_frontera(
-                frontera, pueblo
-            ):
-                nodo_hijo = Nodo(
-                    pueblo,
-                    nodo,
-                    buscarCoordMunicipio(pueblo.nombre, matriz),
-                    pueblo.heuristica,
-                )
-                heapq.heappush(frontera, nodo_hijo)
-                costoActual += float(matriz[nodo.estado.x][nodo_hijo.estado.y])
-
-
-# Municipios, Distancia = GBFS("Cucuta", "Puerto_Trujillo")
-
-# for x in Municipios:
-#     print(x)
-# print(Distancia)
+Municipios, Distancia = busqueda("Cucuta", "Puerto_Trujillo","GBFS")
+for x in Municipios:
+    print(x)
+print(Distancia)
