@@ -116,10 +116,15 @@ class MunicipiosViewSet(viewsets.ModelViewSet):
                     f"{diccionarioPosiciones[i].replace(' ', '_').ljust(max_ancho + 2)}"
                 )  # Nombre de la fila alineado
                 for j in range(30):
-                    # print(matriz[i][col])
-                    archivo.write(
-                        f"{str(self.matriz[i][j]).ljust(max_ancho + 2)}"
-                    )  # Valores de la matriz alineados
+                    # print(f"{str(self.matriz[i][j]).ljust(max_ancho + 2)}")
+                    if i == 29:
+                        archivo.write(
+                            f"{str(self.matriz[i][j]).ljust(max_ancho + 3).replace('\n', '')}"
+                        )
+                    else:
+                        archivo.write(
+                            f"{str(self.matriz[i][j]).ljust(max_ancho + 2)}"
+                        )  # Valores de la matriz alineados
                 archivo.write("\n")
         archivo.close()
         return super().list(request, *args, **kwargs)
@@ -132,8 +137,9 @@ class MunicipiosViewSet(viewsets.ModelViewSet):
             Q(nombre=request.data.get("destino")["nombre"])
         )
         municipios, distancia = busqueda(
-            origen.values().first()["nombre"].replace(" ","_"), destino.values().first()["nombre"].replace(" ", "_"),"A*"
+            origen.values().first()["nombre"].replace(" ","_"), destino.values().first()["nombre"].replace(" ", "_"),request.data.get("algoritmo")
         )
         print(municipios, end="\n")
         print(distancia)
+        print(request.data.get("algoritmo"))
         return Response({"recorrido": municipios, "distancia": distancia})

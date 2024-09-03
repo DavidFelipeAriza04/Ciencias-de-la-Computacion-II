@@ -173,7 +173,7 @@ def construir_ruta(nodo,start):
 
 
 
-Municipios, Distancia = busqueda("Cucuta", "Puerto_Trujillo","GBFS")
-for x in Municipios:
-    print(x)
-print(Distancia)
+# Municipios, Distancia = busqueda("Cucuta", "Puerto_Trujillo","GBFS")
+# for x in Municipios:
+#     print(x)
+# print(Distancia)

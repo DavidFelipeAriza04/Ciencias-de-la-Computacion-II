@@ -15,10 +15,15 @@
 <body>
     <div id="map"></div>
     <div id="municipios">
+        <p> Origen &emsp;&emsp;&emsp;&emsp; Destino</p>
         <div id="origenYdestino">
             <input type="text" disabled class="municipio">
             <input type="text" disabled class="municipio">
         </div>
+        <select name="algoritmo" id="algoritmo" style="margin-bottom: 10px;">
+            <option value="GBFS">GBFS</option>
+            <option value="A*">A*</option>
+        </select>
         <button id="calcular">Calcular</button>
         <textarea name="recorrido" id="recorrido" disabled></textarea>
         <input type="text" id="distancia" disabled style="margin-top: 10px;">
@@ -96,12 +101,13 @@
             },
             body: JSON.stringify({
                 "origen": municipios.find(municipio => municipio["nombre"] == document.querySelector("#origenYdestino").children[0].value),
-                "destino": municipios.find(municipio => municipio["nombre"] == document.querySelector("#origenYdestino").children[1].value)
+                "destino": municipios.find(municipio => municipio["nombre"] == document.querySelector("#origenYdestino").children[1].value),
+                "algoritmo": document.querySelector("#algoritmo").value
             })
         })
             .then(response => response.json())
             .then(data => {
-                console.log(data)
+                // console.log(data)
                 document.getElementById("recorrido").value = data["recorrido"].join(" -> ").replaceAll("_", " ")
                 document.getElementById("distancia").value = data["distancia"]
             })
