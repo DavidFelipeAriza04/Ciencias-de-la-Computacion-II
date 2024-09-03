@@ -23,10 +23,12 @@
         <select name="algoritmo" id="algoritmo" style="margin-bottom: 10px;">
             <option value="GBFS">GBFS</option>
             <option value="A*">A*</option>
+            <option value="Dijkstra">Dijkstra</option>
         </select>
         <button id="calcular">Calcular</button>
         <textarea name="recorrido" id="recorrido" disabled></textarea>
         <input type="text" id="distancia" disabled style="margin-top: 10px;">
+        <button id="limpiar" style="margin-top: 10px;" onclick="limpiar(recorrido)">Limpiar</button>
     </div>
 </body>
 <script>
@@ -45,7 +47,8 @@
     }).addTo(map);
 
     municipios = []
-
+    grafo=[]
+    recorrido = []
     function cargarMunicipios() {
         fetch(url + "Municipios/")
             .then(response => response.json())
@@ -85,6 +88,7 @@
                                 [municipios[i]["latitud"], municipios[i]["longitud"]]
                             ]).addTo(this.map)
                             // linea.bindTooltip(distance.toFixed(2) + ' Km', {permanent: true, className: "distance-tooltip", offset: [0, -10]}).openTooltip();
+                            grafo.push(linea)
                         }
                     }
                     contador++
@@ -93,25 +97,96 @@
             .catch(error => console.log(error))
     }
 
+
+    function limpiar(lineas) {
+        document.querySelector("#origenYdestino").children[0].value = ""
+        document.querySelector("#origenYdestino").children[1].value = ""
+        document.getElementById("recorrido").value = ""
+        document.getElementById("distancia").value = ""
+        if (lineas != null) {
+            lineas.forEach((linea) => {
+                map.removeLayer(linea)
+            })
+        }
+    }
     document.querySelector("#calcular").addEventListener("click", () => {
-        fetch(url + "/Municipios/", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                "origen": municipios.find(municipio => municipio["nombre"] == document.querySelector("#origenYdestino").children[0].value),
-                "destino": municipios.find(municipio => municipio["nombre"] == document.querySelector("#origenYdestino").children[1].value),
-                "algoritmo": document.querySelector("#algoritmo").value
+        if (document.querySelector("#algoritmo").value == "Dijkstra") {
+            fetch(url + "/Municipios/", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    "origen": municipios.find(municipio => municipio["nombre"] == document.querySelector("#origenYdestino").children[0].value),
+                    "destino": municipios.find(municipio => municipio["nombre"] == document.querySelector("#origenYdestino").children[1].value),
+                    "algoritmo": document.querySelector("#algoritmo").value
+                })
             })
-        })
-            .then(response => response.json())
-            .then(data => {
-                // console.log(data)
-                document.getElementById("recorrido").value = data["recorrido"].join(" -> ").replaceAll("_", " ")
-                document.getElementById("distancia").value = data["distancia"]
+                .then(response => response.json())
+                .then(data => {
+                    limpiar(recorrido)
+                    for (let i = 0; i < data["recorrido"].length; i++) {
+                        if (i != data["recorrido"].length - 1) {
+                            // console.log(data["recorrido"][i] + " ---- " + data["recorrido"][i + 1])
+                            // var distance = municipio[municipios[i]["nombre"].replaceAll(" ", "") + "Conexion"];
+                            // console.log(distance)
+
+                            municipio1 = municipios.find(municipio => municipio["nombre"] == data["recorrido"][i].replaceAll("_", " "))
+                            municipio2 = municipios.find(municipio => municipio["nombre"] == data["recorrido"][i + 1].replaceAll("_", " "))
+                            // console.log(municipio1)
+                            // console.log(municipio2)
+
+                            linea = L.polyline([
+                                [municipio1["latitud"], municipio1["longitud"]],
+                                [municipio2["latitud"], municipio2["longitud"]]
+                            ], { color: 'red' }).addTo(this.map)
+                            recorrido.push(linea)
+                        }
+                        // linea.bindTooltip(distance.toFixed(2) + ' Km', {permanent: true, className: "distance-tooltip", offset: [0, -10]}).openTooltip();
+                    }
+                })
+                .catch(error => console.log(error))
+            return
+        } else {
+            fetch(url + "/Municipios/", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    "origen": municipios.find(municipio => municipio["nombre"] == document.querySelector("#origenYdestino").children[0].value),
+                    "destino": municipios.find(municipio => municipio["nombre"] == document.querySelector("#origenYdestino").children[1].value),
+                    "algoritmo": document.querySelector("#algoritmo").value
+                })
             })
-            .catch(error => console.log(error))
+                .then(response => response.json())
+                .then(data => {
+                    // console.log(data)
+                    limpiar(recorrido)
+                    document.getElementById("recorrido").value = data["recorrido"].join(" -> ").replaceAll("_", " ")
+                    document.getElementById("distancia").value = data["distancia"]
+
+                    for (let i = 0; i < data["recorrido"].length; i++) {
+                        if (i != data["recorrido"].length - 1) {
+                            // console.log(data["recorrido"][i] + " ---- " + data["recorrido"][i + 1])
+                            // var distance = municipio[municipios[i]["nombre"].replaceAll(" ", "") + "Conexion"];
+                            // console.log(distance)
+
+                            municipio1 = municipios.find(municipio => municipio["nombre"] == data["recorrido"][i].replaceAll("_", " "))
+                            municipio2 = municipios.find(municipio => municipio["nombre"] == data["recorrido"][i + 1].replaceAll("_", " "))
+                            // console.log(municipio1)
+                            // console.log(municipio2)
+
+                            linea = L.polyline([
+                                [municipio1["latitud"], municipio1["longitud"]],
+                                [municipio2["latitud"], municipio2["longitud"]]
+                            ], { color: 'red' }).addTo(this.map)
+                            recorrido.push(linea)
+                        }
+                    }
+                })
+                .catch(error => console.log(error))
+        }
     })
     window.onload = cargarMunicipios()
 

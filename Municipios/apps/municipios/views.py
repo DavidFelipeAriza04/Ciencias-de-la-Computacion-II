@@ -142,4 +142,7 @@ class MunicipiosViewSet(viewsets.ModelViewSet):
         print(municipios, end="\n")
         print(distancia)
         print(request.data.get("algoritmo"))
+        
+        if request.data.get("algoritmo") == "Dijkstra":
+            return Response({"recorrido": municipios, "distancia": distancia})
         return Response({"recorrido": municipios, "distancia": distancia})
