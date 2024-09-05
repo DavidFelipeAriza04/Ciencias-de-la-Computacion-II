@@ -171,8 +171,28 @@ def construir_ruta(nodo,start):
 
     return nombres_municipios, distancia_total
 
+def algoritmo_Kruskal():
+    with open("Matriz.txt", "r") as f:
+        matriz = crearMatriz(f)
+
+    grafo = {}
+    elementos_grafo = set()
+    for i,fila in enumerate(matriz[1:],1):
+        for j,elemento in enumerate(fila[1:],1):
+            if elemento != "0":
+                nodos = tuple(sorted((matriz[i][0],matriz[0][j])))
+                elementos_grafo.add((nodos,float(elemento)))
+    
+    for elemento in elementos_grafo:
+        grafo[elemento[0]] = elemento[1]
+    
+    grafo_organizado = {key: value for key,value in sorted(grafo.items(),key=lambda grafo:grafo[1])}
+    
+    for key,value in grafo_organizado.items():
+        print(f"{key}:{value}")
 
 
+algoritmo_Kruskal()
 # Municipios, Distancia = busqueda("Cucuta", "Puerto_Trujillo","GBFS")
 # for x in Municipios:
 #     print(x)

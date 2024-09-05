@@ -1,0 +1,26 @@
+<div id="municipios">
+    <p> Origen &emsp;&emsp;&emsp;&emsp; Destino</p>
+    <div id="origenYdestino">
+        <input 
+            type="text" 
+            #origen
+            disabled 
+            class="municipio"
+            [value]="origenYDestino[0]">
+        <input 
+            type="text" 
+            #destino
+            disabled 
+            class="municipio"
+            [value]="origenYDestino[1]">
+    </div>
+    <select name="algoritmo" id="algoritmo" #algoritmo style="margin-bottom: 10px;">
+        <option value="GBFS">GBFS</option>
+        <option value="A*">A*</option>
+        <option value="Dijkstra">Dijkstra</option>
+    </select>
+    <button id="calcular" (click)="calcular_ruta()">Calcular</button>
+    <textarea name="recorrido" id="recorrido" disabled></textarea>
+    <input type="text" id="distancia" disabled style="margin-top: 10px;">
+    <button id="limpiar" style="margin-top: 10px;" onclick="limpiar(recorrido)">Limpiar</button>
+</div>

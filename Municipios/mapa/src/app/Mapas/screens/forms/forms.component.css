@@ -1,0 +1,27 @@
+
+.body {
+    display: flex;
+}
+
+#origenYdestino {
+    display: flex;
+    margin-bottom: 20px;
+}
+
+.municipio{
+    width: 40%;
+    margin: auto;
+}
+
+#municipios {
+    width: 20%;
+    position: fixed;
+    margin: 20px;
+    right: 30px;
+    height: 90%;
+    border: 5px solid black;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
