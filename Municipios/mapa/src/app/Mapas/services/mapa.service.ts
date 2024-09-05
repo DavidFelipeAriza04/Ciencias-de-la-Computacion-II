@@ -26,7 +26,6 @@ export class MapaService {
     this._recorrido.set(newRecorrido);
   }
   
-
   public get_municipios():Observable<Municipio[]>{
     return this._httpClient.get<Municipio[]>(this._url+"Municipios/")
   }

@@ -1,5 +1,5 @@
 import heapq
-from Algoritmos.Nodo import Pueblo, Nodo
+from Nodo import Pueblo, Nodo
 from math import radians, cos, sin, asin, sqrt
 
 def busqueda(origen, destino, metodo='GBFS'):
@@ -171,11 +171,47 @@ def construir_ruta(nodo,start):
 
     return nombres_municipios, distancia_total
 
+# Implementacion del algoritmo
 def algoritmo_Kruskal():
+    grafo = crear_grafo()
+    municipios = set()
+
+    i = 0
+
+    for u in grafo:
+        municipios.add(u[0])
+        municipios.add(u[1])
+    
+    padres = {}
+    rangos = {}
+
+    for municipio in municipios:
+        padres[municipio] = municipio
+        rangos[municipio] = 0
+
+    aristas,vertices = 0,len(municipios)
+
+    resultado = []
+    while aristas < vertices-1:
+        u,v,peso = grafo[i]
+        i+=1
+
+        padre_u = encontrar_padre(padres,u)
+        padre_v = encontrar_padre(padres,v)
+
+        if padre_u != padre_v:
+            aristas+=1
+            resultado.append([u,v,peso])
+            union(padres,rangos,padre_u,padre_v)
+
+    return resultado
+
+#Se encarga de crear el grafo
+def crear_grafo():
     with open("Matriz.txt", "r") as f:
         matriz = crearMatriz(f)
 
-    grafo = {}
+    grafo = []
     elementos_grafo = set()
     for i,fila in enumerate(matriz[1:],1):
         for j,elemento in enumerate(fila[1:],1):
@@ -184,15 +220,31 @@ def algoritmo_Kruskal():
                 elementos_grafo.add((nodos,float(elemento)))
     
     for elemento in elementos_grafo:
-        grafo[elemento[0]] = elemento[1]
-    
-    grafo_organizado = {key: value for key,value in sorted(grafo.items(),key=lambda grafo:grafo[1])}
-    
-    for key,value in grafo_organizado.items():
-        print(f"{key}:{value}")
+        lista = list(elemento[0])
+        lista.append(elemento[1])
+        grafo.append(lista)
 
+    grafo = grafo = sorted(grafo, key=lambda t: t[2])
+    return grafo
 
-algoritmo_Kruskal()
+#Busca al padre del conjunto disjunto
+def encontrar_padre(padre,nombre):
+    if padre[nombre] != nombre:
+        padre[nombre] = encontrar_padre(padre,padre[nombre])
+    return padre[nombre]
+
+#La función se encarga de unir conjuntos disjuntos
+#"padre" aquí se refiere al representante del conjunto, no necesariamente al nodo anterior.
+def union(padres,rangos,u,v):
+    if rangos[u] < rangos[v]:
+        padres[u] = v
+    elif rangos[u] > rangos[v]:
+        padres[v] = u
+    else:
+        padres[v]=u
+        rangos[u]=+1
+
+print(algoritmo_Kruskal())
 # Municipios, Distancia = busqueda("Cucuta", "Puerto_Trujillo","GBFS")
 # for x in Municipios:
 #     print(x)
