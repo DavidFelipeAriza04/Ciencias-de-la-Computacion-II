@@ -125,6 +125,8 @@
                 .then(response => response.json())
                 .then(data => {
                     limpiar(recorrido)
+                    document.getElementById("recorrido").value = data["recorrido"].join(" -> ").replaceAll("_", " ")
+                    document.getElementById("distancia").value = data["distancia"]
                     for (let i = 0; i < data["recorrido"].length; i++) {
                         if (i != data["recorrido"].length - 1) {
                             // console.log(data["recorrido"][i] + " ---- " + data["recorrido"][i + 1])
@@ -147,7 +149,7 @@
                 })
                 .catch(error => console.log(error))
             return
-        } else {
+        } else if (document.querySelector("#algoritmo").value == "A*" || document.querySelector("#algoritmo").value == "GBFS") {
             fetch(url + "/Municipios/", {
                 method: "POST",
                 headers: {
@@ -188,8 +190,8 @@
                 .catch(error => console.log(error))
         }
     })
+    
     window.onload = cargarMunicipios()
-
 </script>
 
 </html>
