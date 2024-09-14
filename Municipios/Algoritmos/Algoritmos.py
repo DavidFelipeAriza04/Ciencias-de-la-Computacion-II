@@ -4,7 +4,7 @@ from Algoritmos.Nodo import Pueblo, Nodo
 from math import radians, cos, sin, asin, sqrt
 
 
-# Implementación de los algoritmos de búsqueda A* y GBFS
+#  * Implementación de los algoritmos de búsqueda A* y GBFS
 def busqueda(origen, destino, metodo="GBFS"):
     # Leer y procesar la matriz y los pueblos
     with open("Matriz.txt", "r") as f:
@@ -181,10 +181,10 @@ def construir_ruta(nodo, start):
 
     nombres_municipios = [municipio.nombre for municipio in nodos]
 
-    return nombres_municipios, distancia_total
+    return nombres_municipios, round(distancia_total,2)
 
 
-# Implementacion del algoritmo de Kruskal
+# * Implementacion del algoritmo de Kruskal
 def algoritmo_Kruskal():
     grafo = crear_grafo()
     municipios = set()
@@ -260,8 +260,11 @@ def union(padres, rangos, u, v):
         padres[v] = u
         rangos[u] = +1
 
+#  * Implementacion del algoritmo de Prim
+def algoritmo_Prim():
+    pass
 
-# Implementacion del algoritmo de Dijkstra
+#  * Implementacion del algoritmo de Dijkstra
 def Dijkstra(origen, destino, diccionarioPosiciones):
     with open("Matriz.txt", "r") as f:
         matriz = crearMatriz(f)
@@ -328,6 +331,9 @@ def Dijkstra(origen, destino, diccionarioPosiciones):
     # Devuelve la distancia más corta desde el nodo origen al nodo destino y el camino
     return camino, distancia[destino]
 
+#  * Implementacion del algoritmo de Bellman-Ford
+def Bellman_Ford():
+    pass
 
 # print(algoritmo_Kruskal())
 # Municipios, Distancia = busqueda("Cucuta", "Puerto_Trujillo","GBFS")
