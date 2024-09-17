@@ -183,7 +183,7 @@ class MunicipiosViewSet(viewsets.ModelViewSet):
                 return Response({"recorrido": recorrido})
             case "Prim":
                 recorrido = algoritmo_Prim()
-                for municipio in recorrido:
-                    print(municipio)
+                # for municipio in recorrido:
+                #     print(municipio)
                 return Response({"recorrido": recorrido})
         return Response({"recorrido": municipios, "distancia": distancia})

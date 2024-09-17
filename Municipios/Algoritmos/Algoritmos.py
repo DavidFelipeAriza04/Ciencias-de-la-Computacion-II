@@ -181,12 +181,13 @@ def construir_ruta(nodo, start):
 
     nombres_municipios = [municipio.nombre for municipio in nodos]
 
-    return nombres_municipios, round(distancia_total,2)
+    return nombres_municipios, round(distancia_total, 2)
 
 
 # * Implementacion del algoritmo de Kruskal
 def algoritmo_Kruskal():
     grafo = crear_grafo()
+    grafo = sorted(grafo, key=lambda t: t[2])
     municipios = set()
 
     i = 0
@@ -238,7 +239,6 @@ def crear_grafo():
         lista.append(elemento[1])
         grafo.append(lista)
 
-    grafo = grafo = sorted(grafo, key=lambda t: t[2])
     return grafo
 
 
@@ -260,9 +260,66 @@ def union(padres, rangos, u, v):
         padres[v] = u
         rangos[u] = +1
 
+
 #  * Implementacion del algoritmo de Prim
 def algoritmo_Prim():
-    pass
+    grafo = crear_grafo_prim()
+    municipios = list(grafo.keys())
+
+
+    # Nodo inicial: seleccionamos el primero de la lista
+    nodo_inicial = municipios[0]
+    # Inicializamos los conjuntos de nodos incluidos y no incluidos en el MST
+    nodos_MST = set([nodo_inicial])
+    nodos_no_incluidos = set(municipios[0:])
+
+    # Lista para almacenar las aristas que forman el MST
+    mst = []
+
+    # Diccionario para guardar las distancias mínimas de cada nodo
+    distancias = {nodo: sys.maxsize for nodo in municipios}
+    distancias[nodo_inicial] = 0
+
+    # Diccionario para rastrear el predecesor de cada nodo
+    predecesores = {nodo: None for nodo in municipios}
+
+    while nodos_no_incluidos:
+        # Buscar el nodo con la distancia mínima al MST actual
+        u = min(nodos_no_incluidos, key=lambda nodo: distancias[nodo])
+
+        # Añadir el nodo al MST
+        nodos_MST.add(u)
+        nodos_no_incluidos.remove(u)
+
+        # Si el nodo tiene predecesor, añadimos la arista correspondiente al MST
+        if predecesores[u] is not None:
+            mst.append((predecesores[u], u, distancias[u]))
+
+        # Actualizamos las distancias de los vecinos de u
+        for v, peso in grafo[u]:
+            if v in nodos_no_incluidos and peso < distancias[v]:
+                distancias[v] = peso
+                predecesores[v] = u
+
+    return mst
+
+
+def crear_grafo_prim():
+    with open("Matriz.txt", "r") as f:
+        matriz = crearMatriz(f)
+
+    grafo = {}
+
+    for i, fila in enumerate(matriz[1:], 1):
+        nodo_origen = matriz[i][0]
+        grafo[nodo_origen] = []
+        for j, peso in enumerate(fila[1:], 1):
+            if peso != "0":
+                nodo_destino = matriz[0][j]
+                grafo[nodo_origen].append((nodo_destino, float(peso)))
+
+    return grafo
+
 
 #  * Implementacion del algoritmo de Dijkstra
 def Dijkstra(origen, destino, diccionarioPosiciones):
@@ -331,11 +388,79 @@ def Dijkstra(origen, destino, diccionarioPosiciones):
     # Devuelve la distancia más corta desde el nodo origen al nodo destino y el camino
     return camino, distancia[destino]
 
-#  * Implementacion del algoritmo de Bellman-Ford
-def Bellman_Ford():
-    pass
 
-# print(algoritmo_Kruskal())
+#  * Implementacion del algoritmo de Bellman-Ford
+def Bellman_Ford(origen, destino, diccionarioPosiciones):
+    with open("Matriz.txt", "r") as f:
+        matriz = crearMatriz(f)
+        matriz_adyacencia = [fila[1:] for fila in matriz[1:]]
+        matriz_adyacencia = [
+            [float(peso) for peso in fila] for fila in matriz_adyacencia
+        ]
+    # Número de nodos
+    n = len(matriz_adyacencia)
+
+    for clave, valor in diccionarioPosiciones.items():
+        if valor == origen.replace("_", " "):
+            origen = clave
+            break
+    for clave, valor in diccionarioPosiciones.items():
+        if valor == destino.replace("_", " "):
+            destino = clave
+            break
+
+    # Inicialización
+    distancia = [sys.maxsize] * n  # Inicializa las distancias a infinito
+    predecesor = [-1] * n  # Inicializa los predecesores
+    distancia[origen] = 0  # La distancia al nodo origen es 0
+
+    # Relajación: se repite n-1 veces
+    for _ in range(n - 1):
+        for u in range(n):
+            for v in range(n):
+                if matriz_adyacencia[u][v] != 0:  # Hay una arista de u a v
+                    nueva_distancia = distancia[u] + matriz_adyacencia[u][v]
+                    if nueva_distancia < distancia[v]:
+                        distancia[v] = nueva_distancia
+                        predecesor[v] = u  # Actualizamos el predecesor
+
+    # Verificación de ciclos negativos
+    for u in range(n):
+        for v in range(n):
+            if matriz_adyacencia[u][v] != 0:  # Hay una arista de u a v
+                if distancia[u] + matriz_adyacencia[u][v] < distancia[v]:
+                    print("El grafo contiene un ciclo de peso negativo.")
+                    return None, None
+
+    # Reconstruir el camino desde el origen hasta el destino
+    camino = []
+    actual = destino
+    while actual != -1:
+        camino.insert(
+            0, actual
+        )  # Insertar al principio para construir el camino de atrás hacia adelante
+        actual = predecesor[actual]
+
+    # Si no hay un camino al destino, distancia[destino] será infinito
+    if distancia[destino] == sys.maxsize:
+        print(f"No existe un camino del nodo {origen} al nodo {destino}.")
+        return None, None
+
+    for municipio in camino:
+        camino[camino.index(municipio)] = diccionarioPosiciones[municipio]
+
+    # Devuelve la distancia más corta desde el nodo origen al nodo destino y el camino
+    return camino, distancia[destino]
+
+
+# for municipio in algoritmo_Kruskal():
+#     print(municipio)
+# print("\n ---------------- \n")
+# for municipio in algoritmo_Prim():
+#     print(municipio)
+
+
+
 # Municipios, Distancia = busqueda("Cucuta", "Puerto_Trujillo","GBFS")
 # for x in Municipios:
 #     print(x)
