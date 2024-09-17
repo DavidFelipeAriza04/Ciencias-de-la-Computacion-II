@@ -24,6 +24,9 @@
             <option value="GBFS">GBFS</option>
             <option value="A*">A*</option>
             <option value="Dijkstra">Dijkstra</option>
+            <option value="Bellman-Ford">Bellman-Ford</option>
+            <option value="Kruskal">Kruskal</option>
+            <option value="Prim">Prim</option>
         </select>
         <button id="calcular">Calcular</button>
         <textarea name="recorrido" id="recorrido" disabled></textarea>
@@ -47,7 +50,7 @@
     }).addTo(map);
 
     municipios = []
-    grafo=[]
+    grafo = []
     recorrido = []
     function cargarMunicipios() {
         fetch(url + "Municipios/")
@@ -110,7 +113,7 @@
         }
     }
     document.querySelector("#calcular").addEventListener("click", () => {
-        if (document.querySelector("#algoritmo").value == "Dijkstra") {
+        if (document.querySelector("#algoritmo").value == "Dijkstra" || document.querySelector("#algoritmo").value == "Bellman-Ford") {
             fetch(url + "/Municipios/", {
                 method: "POST",
                 headers: {
@@ -125,6 +128,8 @@
                 .then(response => response.json())
                 .then(data => {
                     limpiar(recorrido)
+                    document.getElementById("recorrido").value = data["recorrido"].join(" -> ").replaceAll("_", " ")
+                    document.getElementById("distancia").value = data["distancia"]
                     for (let i = 0; i < data["recorrido"].length; i++) {
                         if (i != data["recorrido"].length - 1) {
                             // console.log(data["recorrido"][i] + " ---- " + data["recorrido"][i + 1])
@@ -146,8 +151,7 @@
                     }
                 })
                 .catch(error => console.log(error))
-            return
-        } else {
+        } else if (document.querySelector("#algoritmo").value == "A*" || document.querySelector("#algoritmo").value == "GBFS") {
             fetch(url + "/Municipios/", {
                 method: "POST",
                 headers: {
@@ -187,9 +191,44 @@
                 })
                 .catch(error => console.log(error))
         }
-    })
-    window.onload = cargarMunicipios()
+        else if (document.querySelector("#algoritmo").value == "Kruskal" || document.querySelector("#algoritmo").value == "Prim") {
+            fetch(url + "/Municipios/", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    "algoritmo": document.querySelector("#algoritmo").value
+                })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    // console.log(data)
+                    limpiar(recorrido)
+                    limpiar(grafo)
+                    // console.log(data["recorrido"])
+                    for (let i = 0; i < data["recorrido"].length; i++) {
+                        // console.log(data["recorrido"][i][0] + " ---- " + data["recorrido"][i][1])
+                        // var distance = municipio[municipios[i]["nombre"].replaceAll(" ", "") + "Conexion"];
+                        // console.log(distance)
 
+                        municipio1 = municipios.find(municipio => municipio["nombre"] == data["recorrido"][i][0].replaceAll("_", " "))
+                        municipio2 = municipios.find(municipio => municipio["nombre"] == data["recorrido"][i][1].replaceAll("_", " "))
+                        // console.log(municipio1)
+                        // console.log(municipio2)
+
+                        linea = L.polyline([
+                            [municipio1["latitud"], municipio1["longitud"]],
+                            [municipio2["latitud"], municipio2["longitud"]]
+                        ], { color: 'red' }).addTo(this.map)
+                        recorrido.push(linea)
+                    }
+                })
+                .catch(error => console.log(error))
+        }
+    })
+
+    window.onload = cargarMunicipios()
 </script>
 
 </html>

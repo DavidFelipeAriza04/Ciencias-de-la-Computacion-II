@@ -3,7 +3,7 @@ from .models import Municipio
 from .serializers import MunicipioSerializer
 from rest_framework.response import Response
 from django.db.models import Q
-from Algoritmos.Algoritmos import busqueda
+from Algoritmos.Algoritmos import busqueda, Dijkstra , Bellman_Ford, algoritmo_Kruskal, algoritmo_Prim
 
 diccionarioPosiciones = {
     0: "Leticia",
@@ -130,19 +130,60 @@ class MunicipiosViewSet(viewsets.ModelViewSet):
         return super().list(request, *args, **kwargs)
 
     def create(self, request, *args, **kwargs):
-        origen = Municipio.objects.filter(
-            Q(nombre=request.data.get("origen")["nombre"])
-        )
-        destino = Municipio.objects.filter(
-            Q(nombre=request.data.get("destino")["nombre"])
-        )
-        municipios, distancia = busqueda(
-            origen.values().first()["nombre"].replace(" ","_"), destino.values().first()["nombre"].replace(" ", "_"),request.data.get("algoritmo")
-        )
-        print(municipios, end="\n")
-        print(distancia)
-        print(request.data.get("algoritmo"))
-        
-        if request.data.get("algoritmo") == "Dijkstra":
-            return Response({"recorrido": municipios, "distancia": distancia})
+        match request.data.get("algoritmo"):
+            case "GBFS" | "A*":
+                origen = Municipio.objects.filter(
+                    Q(nombre=request.data.get("origen")["nombre"])
+                )
+                destino = Municipio.objects.filter(
+                    Q(nombre=request.data.get("destino")["nombre"])
+                )
+                municipios, distancia = busqueda(
+                    origen.values().first()["nombre"].replace(" ", "_"),
+                    destino.values().first()["nombre"].replace(" ", "_"),
+                    request.data.get("algoritmo")
+                )
+                print(municipios, end="\n")
+                print(distancia)
+                print(request.data.get("algoritmo"))
+            case "Dijkstra":
+                origen = Municipio.objects.filter(
+                    Q(nombre=request.data.get("origen")["nombre"])
+                )
+                destino = Municipio.objects.filter(
+                    Q(nombre=request.data.get("destino")["nombre"])
+                )
+                municipios, distancia = Dijkstra(
+                    origen.values().first()["nombre"].replace(" ", "_"),
+                    destino.values().first()["nombre"].replace(" ", "_"),
+                    diccionarioPosiciones
+                )
+                print(municipios, end="\n")
+                print(distancia)
+                print(request.data.get("algoritmo"))
+            case "Bellman-Ford":
+                origen = Municipio.objects.filter(
+                    Q(nombre=request.data.get("origen")["nombre"])
+                )
+                destino = Municipio.objects.filter(
+                    Q(nombre=request.data.get("destino")["nombre"])
+                )
+                municipios, distancia = Bellman_Ford(
+                    origen.values().first()["nombre"].replace(" ", "_"),
+                    destino.values().first()["nombre"].replace(" ", "_"),
+                    diccionarioPosiciones
+                )
+                print(municipios, end="\n")
+                print(distancia)
+                print(request.data.get("algoritmo"))
+            case "Kruskal":
+                recorrido = algoritmo_Kruskal()
+                for municipio in recorrido:
+                    print(municipio)
+                return Response({"recorrido": recorrido})
+            case "Prim":
+                recorrido = algoritmo_Prim()
+                # for municipio in recorrido:
+                #     print(municipio)
+                return Response({"recorrido": recorrido})
         return Response({"recorrido": municipios, "distancia": distancia})
