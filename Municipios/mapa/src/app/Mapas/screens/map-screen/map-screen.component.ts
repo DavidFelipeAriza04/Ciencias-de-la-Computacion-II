@@ -122,9 +122,8 @@ export class MapScreenComponent implements AfterViewInit {
   }
 
   private dibujarRecorrido() {
-    console.log(this.mapaService.recorrido());
     if (this.mapaService.recorrido().length == 0) return;
-    console.log('Hs');
+    this.limpiar_lineas(this.recorridoMapa);
     for (let i = 0; i < this.mapaService.recorrido().length; i++) {
       if (i != this.mapaService.recorrido().length - 1) {
         let municipio1: Municipio | undefined =
@@ -152,6 +151,14 @@ export class MapScreenComponent implements AfterViewInit {
           this.recorridoMapa.push(linea);
         }
       }
+    }
+  }
+
+  private limpiar_lineas(lineas:L.Polyline[]){
+      if (lineas != null) {
+        lineas.forEach((linea) => {
+            this.map.removeLayer(linea)
+        })
     }
   }
 }

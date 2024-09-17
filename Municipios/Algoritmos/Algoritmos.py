@@ -1,5 +1,5 @@
 import heapq
-from Nodo import Pueblo, Nodo
+from Algoritmos.Nodo import Pueblo, Nodo
 from math import radians, cos, sin, asin, sqrt
 
 def busqueda(origen, destino, metodo='GBFS'):

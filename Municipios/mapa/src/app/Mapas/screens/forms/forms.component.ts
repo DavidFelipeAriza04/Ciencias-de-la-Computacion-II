@@ -16,6 +16,9 @@ export class FormsComponent implements AfterViewInit {
   @ViewChild("destino") destinoInput!:ElementRef<HTMLInputElement>
   @ViewChild("algoritmo") algoritmoSelect!:ElementRef<HTMLSelectElement>
 
+  recorridoTextArea: String = "";
+  distanciaTextArea: number = 0;
+
   ngAfterViewInit(): void {
     if (!this.algoritmoSelect || !this.origenInput || !this.destinoInput) {
       console.error('Algunos elementos ViewChild no están disponibles');
@@ -36,6 +39,8 @@ export class FormsComponent implements AfterViewInit {
     
     this.mapaService.get_recorrido([municipioOrigen,municipioDestino],algoritmo)?.subscribe({
       next:(resData)=>{
+        this.recorridoTextArea = resData["recorrido"].join(" -> ").replaceAll("_", " ");
+        this.distanciaTextArea = resData["distancia"];
         this.mapaService.setRecorrido(resData["recorrido"]);
         this.mapaService.set_distancia_actual(resData["distancia"])
       }

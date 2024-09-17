@@ -25,3 +25,10 @@
     justify-content: center;
     align-items: center;
 }
+
+#recorrido{
+    margin-top: 10px;
+    height: 120px;
+    overflow-y: scroll;
+    resize: none;
+}
