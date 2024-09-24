@@ -1,5 +1,7 @@
 import random as rd
 
+
+ROUTER_COUNT = 20
 # genera matriz de adyacencias con probabilidades de caída de enlace
 def genMatrix(n: int):
     prob = lambda p: p if (p <= 0.4) else 1
@@ -40,6 +42,12 @@ diccionario_conexiones = {
     "Router18": ["Router15", "Router16", "Router17", "Router20"],
     "Router19": ["Router16", "Router17"],
     "Router20": ["Router18"],
+}
+
+nombresRouters = ["Router" + str(i+1) for i in range(0,ROUTER_COUNT)]
+diccionario_conexiones = {
+    nombresRouters[i] : ["Router"+str(j+1) for j in adjacent(matriz[i])]
+    for i in range(0,ROUTER_COUNT)
 }
 
 def dijkstra(graph, node1, node2):
