@@ -175,7 +175,7 @@ def Dijkstra(origen, destino, matriz_adyacencia, routers, probCaidas):
 #matriz = crear_matriz()
 
 #nombresRouters = ["Router" + str(i+1) for i in range(0,ROUTER_COUNT)]
-#
+
 Routers = [None] * 20
 
 for i in range(len(Routers)):

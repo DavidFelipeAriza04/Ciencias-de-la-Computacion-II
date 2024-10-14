@@ -20,7 +20,7 @@
         <option value="Dijkstra">Dijkstra</option>
     </select>
     <button id="calcular" (click)="calcular_ruta()">Calcular</button>
-    <textarea name="recorrido" id="recorrido" disabled></textarea>
-    <input type="text" id="distancia" disabled style="margin-top: 10px;">
+    <textarea name="recorrido" id="recorrido" disabled [value]="recorridoTextArea"></textarea>
+    <input type="text" id="distancia" disabled style="margin-top: 10px;" [value]="distanciaTextArea">
     <button id="limpiar" style="margin-top: 10px;" onclick="limpiar(recorrido)">Limpiar</button>
 </div>
