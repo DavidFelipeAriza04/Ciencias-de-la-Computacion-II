@@ -214,7 +214,7 @@ def algoritmo_Kruskal():
         padre_v = encontrar_padre(padres, v)
 
         if padre_u != padre_v:
-            aristas += 1
+            aristas += 1    
             resultado.append([u, v, peso])
             union(padres, rangos, padre_u, padre_v)
 
@@ -228,6 +228,9 @@ def crear_grafo():
 
     grafo = []
     elementos_grafo = set()
+
+
+    #Elemento Peso
     for i, fila in enumerate(matriz[1:], 1):
         for j, elemento in enumerate(fila[1:], 1):
             if elemento != "0":
