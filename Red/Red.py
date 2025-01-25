@@ -3,7 +3,7 @@ import random
 import sys
 import time
 
-ROUTER_COUNT = 20 # se asume por ahora un total de 20 routers
+ROUTER_COUNT = 20  # se asume por ahora un total de 20 routers
 BIG_NUM = 1000000
 diccionario_conexiones = {
     "Router1": ["Router3"],
@@ -29,18 +29,45 @@ diccionario_conexiones = {
 }
 
 # genera matriz de adyacencias con probabilidades de caída de enlace
+# def genMatrix(n: int):
+#     higher_prob_indices = [2, 9, 10, 16, 19, 17, 4, 6, 13, 15]
+#     def prob(p, index):
+#         if index in higher_prob_indices:
+#             # Para estos índices, aumentamos la probabilidad de fallo
+#             return random.uniform(0.5, 1)  # Probabilidad mayor entre 0.5 y 1
+#         else:
+#             # Para los otros índices, mantenemos la lógica original
+#             return random.uniform(0, 0.20) if p <= 0.8 else 1
+#     probabilidad = lambda p: random.uniform(0,0.25) if p <= 0.8 else 1
+#     return [ [probabilidad(random.uniform(0,1)) for i in range(0,n)]
+#         for j in range(0,n)]
+
+
 def genMatrix(n: int):
-    prob = lambda p: random.uniform(0,0.25) if p <= 0.8 else 1
-    return [ [prob(random.uniform(0,1)) for i in range(0,n)] 
-        for j in range(0,n)]
+    # Lista de índices donde la probabilidad será mayor
+    higher_prob_indices = [2, 9, 10, 16, 19, 17, 4, 6, 13, 15]
+
+    # Función para asignar la probabilidad
+    def prob(p, index):
+        if index in higher_prob_indices:
+            return random.uniform(0, 0.20) if p <= 0.7 else 1
+        else:
+            return random.uniform(0, 0.10) if p <= 0.9 else 1
+
+    # Generar la matriz de adyacencias
+    return [[prob(random.uniform(0, 1), j * n + i) for i in range(n)] for j in range(n)]
+
 
 def adjacent(xs):
     out = []
-    for i in range(0,len(xs)): 
-        if xs[i]<1: out.append(i)
+    for i in range(0, len(xs)):
+        if xs[i] < 1:
+            out.append(i)
     return out
 
+
 conexiones_revisadas = []
+
 
 def crear_matriz(probCaidas):
     conexiones_revisadas.clear()
@@ -52,39 +79,29 @@ def crear_matriz(probCaidas):
             ] in conexiones_revisadas:
                 if matriz[i][j] == 0:
                     pass
-                    # print(f"No hay conexion {Routers[i].name} - {Routers[j].name}")
-                # else:
-                #     print(
-                #         f"{Routers[i].name}  conectado con {Routers[j].name} con {matriz[i][j]}"
-                #     )
                 continue
             if Routers[j].name in diccionario_conexiones[Routers[i].name]:
                 h = heuristica(Routers[i], Routers[j], probCaidas)
-                # print(f"{Routers[i].name}  conectado con {Routers[j].name} con {h}")
                 matriz[i][j] = h
                 matriz[j][i] = h
                 conexiones_revisadas.append([Routers[i].name, Routers[j].name])
-    # print("Matriz de adyacencia creada:\n ")
     return matriz
 
-def heuristica(RouterInicial: Router, RouterFinal: Router, probCaidas=[[0]*20]*20):
+
+def heuristica(RouterInicial: Router, RouterFinal: Router, probCaidas=[[0] * 20] * 20):
     i, j = RouterInicial.id(), RouterFinal.id()
     Ai, Af = RouterInicial.ancho_banda, RouterFinal.ancho_banda
     Pc = probCaidas[i][j]
     C = RouterInicial.caido(Pc)
-    if C == 0 or Pc == 1: return 0
+    if C == 0 or Pc == 1:
+        return 0
     return round((Ai + Af) / (1 - Pc), 4)
-#    h = 0
-#    router_final_caido = RouterFinal.caido(Pc)
-#    if router_final_caido != 0:
-#        h = (RouterInicial.ancho_banda + RouterFinal.ancho_banda) / router_final_caido
-#    return h
+
 
 def enviar_paquete(paquete, routers, probCaidas):
     print(f"Enviando paquete {paquete}...")
     rutas = []
     matriz = crear_matriz(probCaidas)
-    for row in matriz: print(row)
     for parte in paquete:
         print(f"Enviando parte {parte}...")
         camino = Dijkstra(0, 19, matriz, routers, probCaidas)
@@ -144,13 +161,7 @@ def Dijkstra(origen, destino, matriz_adyacencia, routers, probCaidas):
             0, nodo
         )  # Insertar al principio para construir el camino de atrás hacia adelante
         nodo = predecesor[nodo]
-    # for i in range(len(camino)):
-    #     print(camino[i] + 1, end=", ")
-    # print("\n")
     for router in camino:
-        # print(routers[router].name)
-        # print(router2)
-        # print(router + 1)
         if len(camino) != 1:
             if camino.index(router) + 1 < len(camino):
                 # print(camino[camino.index(router) + 1] + 1)
@@ -158,23 +169,16 @@ def Dijkstra(origen, destino, matriz_adyacencia, routers, probCaidas):
                     routers[camino[camino.index(router) + 1]].name
                     in diccionario_conexiones[routers[router].name]
                 ):
-                    # print(
-                    #     f"{routers[router].name} conectado con {routers[camino[camino.index(router)+1]].name}"
-                    # )
+                    # EXISTE CONEXION ENTRE LOS ROUTERS
                     pass
                 else:
-                    # print(
-                    #     f"No hay conexion {routers[router].name} - {routers[camino[camino.index(router)+1]].name}"
-                    # )
+                    # NO EXISTE CONEXION ENTRE LOS ROUTERS
                     return None
     if len(camino) == 1:
         return None
     # Devuelve la distancia más corta desde el nodo origen al nodo destino y el camino
     return camino
 
-#matriz = crear_matriz()
-
-#nombresRouters = ["Router" + str(i+1) for i in range(0,ROUTER_COUNT)]
 
 Routers = [None] * 20
 
@@ -187,39 +191,19 @@ probCaidas = genMatrix(ROUTER_COUNT)
 matriz = [[0 for i in range(20)] for j in range(20)]
 matriz = crear_matriz(probCaidas)
 
-# for Router in Routers:
-#     print(Router.name)
-
-
-# for i in range(20):
-#     for j in range(20):
-#         print(str(matriz[i][j]).ljust(4) ,end=" ")
-#     print("\n")
-
-# print(matriz[0])
-
 paquete = input("Ingrese la frase a enviar: ")
 paquete = dividir(paquete, 4)
-# print(f"\n + {paquete}")
-# for i in range(len(paquete)):
-#     print(paquete[i], end="")
 
 caminos = enviar_paquete(paquete, Routers, probCaidas)
-# if caminos == None:
-#     print("No se pudo enviar el paquete")
-#     exit()
-# print("\n")
-# print(caminos)
+
 for i in range(len(caminos)):
     print("\n")
     if caminos[i] == None:
         print(f"No se pudo enviar el paquete {paquete[i]}")
     else:
-        print(
-            f"Paquete {paquete[i]} enviado exitosamente por el camino: "
-        )
+        print(f"Paquete {paquete[i]} enviado exitosamente por el camino: ")
         for j in range(len(caminos[i])):
             if j == len(caminos[i]) - 1:
-                print(caminos[i][j]+1, end=".")
+                print(caminos[i][j] + 1, end=".")
                 break
-            print(caminos[i][j]+1, end=" -> ")
+            print(caminos[i][j] + 1, end=" -> ")
