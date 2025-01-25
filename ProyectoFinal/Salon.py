@@ -40,6 +40,9 @@ class Salon():
             if superficie.salonesSeparados[0] == self or superficie.salonesSeparados[1] == self:
                 print(f"Salon {self.id} adyacente a {superficie.salonesSeparados[0].id}"if superficie.salonesSeparados[1] == self else f"Salon {self.id} adyacente a {superficie.salonesSeparados[1].id}")
                 coeficienteAbsorcion += superficie.material.coeficienteAbsorcion[frecuencia]
+        # Revisar
+        coeficienteAbsorcion /= len(superficies)
+        # Revisar 
         intensidad = sum([10 ** (db / 10) for db in intensidadesEntrantes])
         intensidad = 10 * math.log10(intensidad)
         sonidoEntrante = intensidad * math.log10(1/coeficienteAbsorcion)

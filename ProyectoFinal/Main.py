@@ -61,5 +61,5 @@ superficies = [
     Superficie(escayola, [salon102, salon202], "Techo"),
 ]
 # edificio = Edificio(salones, superficies)
-salon101.CalcularRuido(superficies)
+salon103.CalcularRuido(superficies)
 # edificio.determinar_habilidad()
