@@ -18,8 +18,6 @@ def genBandwidths(n: int, minim: float, maxim: float):
 node_count = 12 # total de routers asumido
 minW, maxW = 0.4, 9; # rango de banda ancha asumido
 network = genMatrix(node_count)
-
-print(network)
 bandwiths = genBandwidths(node_count, minW, maxW)
 H = lambda n,m: heuristic(network, bandwiths, n, m) # H(n,m)
 

@@ -28,11 +28,22 @@ diccionario_conexiones = {
     "Router20": ["Router18"],
 }
 
-# genera matriz de adyacencias con probabilidades de caída de enlace
 def genMatrix(n: int):
-    prob = lambda p: random.uniform(0,0.25) if p <= 0.8 else 1
-    return [ [prob(random.uniform(0,1)) for i in range(0,n)] 
-        for j in range(0,n)]
+    # Lista de índices donde la probabilidad será mayor
+    higher_prob_indices = [2, 9, 10, 16, 19, 17, 4, 6, 13, 15]
+    
+    # Función para asignar la probabilidad
+    def prob(p, index):
+        if index in higher_prob_indices:
+            return random.uniform(0, 0.20) if p <= 0.7 else 1
+        else:
+            return random.uniform(0, 0.10) if p <= 0.9 else 1
+
+    # Generar la matriz de adyacencias
+    return [
+        [prob(random.uniform(0, 1), j * n + i) for i in range(n)]
+        for j in range(n)
+    ]
 
 def adjacent(xs):
     out = []

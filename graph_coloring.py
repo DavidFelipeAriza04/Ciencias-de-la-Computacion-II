@@ -80,6 +80,31 @@ class Graph:
 
 		return result
 
+	def blossom_algorithm(self):
+		adj_matrix = [[1 if value <= 100 else 0 for value in row] for row in self.adjacencies]
+		n = len(adj_matrix)  
+		match = [-1] * n     
+		visited = [False] * n
+
+		def find_augmenting_path(u):
+			"""Busca un camino aumentante usando DFS"""
+			for v in range(n):
+				if adj_matrix[u][v] == 1 and not visited[v]:  
+					visited[v] = True
+					if match[v] == -1 or find_augmenting_path(match[v]):
+						match[u] = v
+						match[v] = u
+						return True
+			return False
+
+		# Proceso principal: encontrar emparejamientos
+		for u in range(n):
+			if match[u] == -1:  
+				visited = [False] * n 
+				find_augmenting_path(u)
+
+		return match
+
 def main():
 	graph = Graph([1,2,3,4,5,6])
 	graph.set_adj([
@@ -90,19 +115,11 @@ def main():
 		[0,0,0,0,0,100],
 		[0,0,0,0,0,0]
 	])
-	g = graph.get_incompatibility_graph()
+	result = graph.blossom_algorithm()
 
-	# se imprime la matríz de adyacencias
-	for row in graph.adjacencies:
-		print(row)
-
-	print("")
-
-	# se imprime la lista de adyacencias del grafo de incompatibilidad
-	for row in g:
-		print(row)
-
-	print("")
-	print(graph.greedy_coloring())
+	print("Emparejamiento máximo:")
+	for i in range(len(result)):
+		if i < result[i]:
+			print(f"({i}, {result[i]})")
 		
 main()
