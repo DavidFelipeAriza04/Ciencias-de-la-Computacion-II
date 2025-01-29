@@ -1,1 +1,0 @@
-C = RouterInicial.caido(Pc)
