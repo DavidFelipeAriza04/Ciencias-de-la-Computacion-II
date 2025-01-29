@@ -6,16 +6,17 @@ from Superficie import Superficie
 
 
 actividades = [
-    Actividad(100, 0.0, "Lectura(Biblioteca)"),
+    Actividad(45, 55, "Lectura(Biblioteca)"),
     Actividad(50, 0.0, "Seminario"),
-    Actividad(80, 0.0, "Clases Magistrales"),
-    Actividad(20, 0.0, "Exámenes"),
+    Actividad(55, 0.0, "Clases Magistrales"),
+    Actividad(50, 0.0, "Exámenes"),
     Actividad(60, 0.0, "Salones de esparcimiento"),
-    Actividad(58, 0.0, "Construcción"),
+    Actividad(80, 0.0, "Construcción"),
 ]
 
 hormigon = Material(
-    {"100": 0.30, "250": 0.45, "500": 0.30, "1000": 0.25, "2000": 0.40, "4000": 0.25},
+    {"100": 0.30, "250": 0.45, "500": 0.30,
+        "1000": 0.25, "2000": 0.40, "4000": 0.25},
     "Hormigon",
 )
 ladrillo = Material(
@@ -30,20 +31,22 @@ ladrillo = Material(
     "Ladrillo",
 )
 vidrio = Material(
-    {"100": 0.035, "250": 0.04, "500": 0.027, "1000": 0.03, "2000": 0.02, "4000": 0.02},
+    {"100": 0.035, "250": 0.04, "500": 0.027,
+        "1000": 0.03, "2000": 0.02, "4000": 0.02},
     "Vidrio",
 )
 escayola = Material(
-    {"100": 0.02, "250": 0.03, "500": 0.04, "1000": 0.05, "2000": 0.05, "4000": 0.06},
+    {"100": 0.02, "250": 0.03, "500": 0.04,
+        "1000": 0.05, "2000": 0.05, "4000": 0.06},
     "Escayola",
 )
 
-salon101 = Salon(actividades[0], [], 0.0, 1, 101)
-salon102 = Salon(actividades[2], [], 0.0, 1, 102)
-salon103 = Salon(actividades[3], [], 0.0, 1, 103)
-salon104 = Salon(actividades[1], [], 0.0, 1, 104)
-salon201 = Salon(actividades[4], [], 0.0, 2, 201)
-salon202 = Salon(actividades[1], [], 0.0, 2, 202)
+salon101 = Salon(actividades[0], [], 50, 1, 101)
+salon102 = Salon(actividades[2], [], 60, 1, 102)
+salon103 = Salon(actividades[3], [], 65, 1, 103)
+salon104 = Salon(actividades[1], [], 55, 1, 104)
+salon201 = Salon(actividades[4], [], 80, 2, 201)
+salon202 = Salon(actividades[1], [], 55, 2, 202)
 
 salones = [salon101, salon102, salon103, salon104, salon201, salon202]
 
@@ -60,6 +63,6 @@ superficies = [
     Superficie(escayola, [salon101, salon201], "Techo"),
     Superficie(escayola, [salon102, salon202], "Techo"),
 ]
-# edificio = Edificio(salones, superficies)
+edificio = Edificio(salones, superficies)
 salon103.CalcularRuido(superficies)
-# edificio.determinar_habilidad()
+edificio.determinar_habilidad()
