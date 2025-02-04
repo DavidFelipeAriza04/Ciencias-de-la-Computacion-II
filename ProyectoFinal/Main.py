@@ -3,15 +3,14 @@ from Actividad import Actividad
 from Salon import Salon
 from Material import Material
 from Superficie import Superficie
-from manim import InteractiveRadious
 class Init():
     actividades = [
-        Actividad(45, 55, "Lectura(Biblioteca)"),
-        Actividad(50, 0.0, "Seminario"),
-        Actividad(55, 0.0, "Clases Magistrales"),
-        Actividad(50, 0.0, "Exámenes"),
-        Actividad(60, 0.0, "Salones de esparcimiento"),
-        Actividad(80, 0.0, "Construcción"),
+        Actividad(40, 100, "Lectura(Biblioteca)"),
+        Actividad(50, 100, "Seminario"),
+        Actividad(55, 250, "Clases Magistrales"),
+        Actividad(70, 100, "Exámenes"),
+        Actividad(60, 400, "Salones de esparcimiento"),
+        Actividad(80, 500, "Construcción"),
     ]
 
     hormigon = Material(
@@ -45,7 +44,7 @@ class Init():
     salon102 = Salon(actividades[2], [], 60, 1, 102)
     salon103 = Salon(actividades[3], [], 65, 1, 103)
     salon104 = Salon(actividades[1], [], 55, 1, 104)
-    salon201 = Salon(actividades[4], [], 80, 2, 201)
+    salon201 = Salon(actividades[4], [], 100, 2, 201)
     salon202 = Salon(actividades[1], [], 55, 2, 202)
 
     salones = [salon101, salon102, salon103, salon104, salon201, salon202]
@@ -65,5 +64,6 @@ class Init():
     ]
     
     edificio = Edificio(salones, superficies)
-    salon103.CalcularRuido(superficies)
-    edificio.determinar_habilidad()
+    # salon103.CalcularRuido(superficies)
+    edificio.determinar_habitabilidad()
+    # edificio.calcular_numero_espacios_habitables()
