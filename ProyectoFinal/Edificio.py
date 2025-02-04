@@ -42,10 +42,16 @@ class Edificio:
                 salonesHabitables[1] += 1
             else:
                 salonesHabitables[2] += 1
+        # if the percentage of habitable rooms is > 70%, the building is habitable.
         if (salonesHabitables[0] + salonesHabitables[1]) / len(self.salones) >= 0.7:
             print(f"-------------- \nEl edificio es habitable")
+            return True
         else:
             print(f"-------------- \nEl edificio no es habitable")
+            return False
+    
+    def reorganizar_actividades(self):
+        actividades = [salon.actividad for salon in self.salones]
 
     def calcular_numero_espacios_habitables(self):
         self.determinar_habitabilidad()
