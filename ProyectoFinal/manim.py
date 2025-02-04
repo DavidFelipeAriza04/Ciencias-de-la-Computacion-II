@@ -5,24 +5,16 @@ from Main import Init
 class InteractiveRadious(ThreeDScene):
     def construct(self):
         init = Init()
+        init.edificio.determinar_habitabilidad()
+
+        classrooms = init.edificio.salones
+        surfaces = init.edificio.superficies
+
         # Punto interactivo
         cursor_dot = Dot3D().move_to([3, 2, 0])  # Usar Dot3D para puntos en 3D
 
-        # Crear puntos en el espacio para el plano XY
-        '''
-        points = [
-            [x, y, z]  # Fijamos z en 1 para trazar solo en XY
-            for x in range(1, 6)
-            for y in range(1, 6)
-            for z in range(1,6)
-        ]
-        '''
-
-        print(init.salones)
-
         #Obtener ID
         name_classrooms = [str(classroom.id) for classroom in init.salones]
-        print(name_classrooms)
         points = []
 
         z_value = 0
@@ -31,7 +23,6 @@ class InteractiveRadious(ThreeDScene):
         index = 0
         for name_classroom in name_classrooms:
             if z_value == int(name_classroom[0])-1:
-                print(index)
                 x_value = index // 2
                 y_value = index % 2
             else:
@@ -43,37 +34,26 @@ class InteractiveRadious(ThreeDScene):
             index+=1
 
         # Crear puntos visi.bles
-        dots = VGroup(*[Dot3D(point=point, color=YELLOW) for point in points])
-        lines = VGroup(*[
-            Line3D(start=points[i], end=points[i + 1], color=RED)
-            for i in range(len(points) - 1)
-            if (i + 1) % 5 != 0  # Evitar salto entre bloques de X
-        ])
-        '''
-        # Crear líneas en el eje X (mismo Y, Z)
-        lines_x = VGroup(*[
-            Line3D(start=points[i], end=points[i + 1], color=RED)
-            for i in range(len(points) - 1)
-            if (i + 1) % 5 != 0  # Evitar salto entre bloques de X
+        dots = VGroup(*[Dot3D(point=point, color=classrooms[index].habitable) for index,point in enumerate(points)])
+
+        # Crear las etiquetas para los puntos
+        labels = VGroup(*[
+            Text(f"{name_classrooms[index]}", font_size=18).next_to(point, RIGHT) 
+            for index, point in enumerate(points)
         ])
 
-        # Crear líneas en el eje Y (mismo X, Z)
-        lines_y = VGroup(*[
-            Line3D(start=points[i], end=points[i + 5], color=GREEN)
-            for i in range(len(points) - 5)
-            if (i + 5) % 25 >= 5  # Evitar conexión entre bloques de Y
-        ])
+        lines = VGroup()
 
-        # Crear líneas en el eje Z (mismo X, Y)
-        lines_z = VGroup(*[
-            Line3D(start=points[i], end=points[i + 25], color=BLUE)
-            for i in range(len(points) - 25)
-        ])
+        for surface in surfaces:
+            separate_classrooms = surface.salonesSeparados
 
-        # Añadir ejes, círculo, punto y esferas
-        self.add(cursor_dot, dots,lines_x,lines_y,lines_z)
-        '''
-        self.add(cursor_dot, dots)
+            index1 = self.search_position(classrooms,separate_classrooms[0])
+            index2 = self.search_position(classrooms,separate_classrooms[1])
+
+            line = Line3D(start=points[index1], end=points[index2], color=surface.material.color)
+            lines.add(line)
+
+        self.add(cursor_dot, dots,lines,labels)
         # Ajustar cámara 3D
         self.set_camera_orientation(phi=75 * DEGREES, theta=30 * DEGREES)
         
@@ -88,3 +68,8 @@ class InteractiveRadious(ThreeDScene):
                 self.cursor_dot.animate.move_to(self.mouse_point.get_center())
             )
         super().on_key_press(symbol, modifiers)
+
+    def search_position(self, classrooms, classroom):
+        for index,x in enumerate(classrooms):
+            if x == classroom:
+                return index
