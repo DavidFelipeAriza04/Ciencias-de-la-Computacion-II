@@ -27,11 +27,30 @@ class Edificio:
             print("\n")
 
     def determinar_habitabilidad(self):
+        salonesHabitables = [0,0,0]
         for salon in self.salones:
             # print(salon)
             salon.DeterminarHabitabilidad(self.superficies)
-        pass
+            if salon.habitable == "GREEN":
+                salonesHabitables[0] += 1
+            elif salon.habitable == "YELLOW":
+                salonesHabitables[1] += 1
+            else:
+                salonesHabitables[2] += 1
+        if (salonesHabitables[0]+salonesHabitables[1])/len(self.salones) >= 0.7:
+            print(f"-------------- \nEl edificio es habitable")
+        else:
+            print(f"-------------- \nEl edificio no es habitable")
 
     def calcular_numero_espacios_habitables(self):
         self.determinar_habitabilidad()
+        salonesHabitables = [0,0,0]
+        for salon in self.salones:
+            if salon.habitable == "GREEN":
+                salonesHabitables[0] += 1
+            elif salon.habitable == "YELLOW":
+                salonesHabitables[1] += 1
+            else:
+                salonesHabitables[2] += 1
+        print(f"Salones habitables: {salonesHabitables[0] + salonesHabitables[1]} de {len(self.salones)}")
         pass

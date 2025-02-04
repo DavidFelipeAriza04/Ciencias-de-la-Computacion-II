@@ -70,4 +70,4 @@ class Salon:
         else:
             self.habitable = "RED"
         print(f"El salon {self.id} es habitable: {self.habitable}")
-        print(f"Actividad: {self.actividad.nombre}\nMaximo Permisible: {self.maximoPermisible} \nIntensidad de ruido: {sonidoEntrante}")
+        print(f"- Actividad: {self.actividad.nombre}\n- Maximo Permisible: {self.maximoPermisible} \n- Intensidad de ruido: {sonidoEntrante}")

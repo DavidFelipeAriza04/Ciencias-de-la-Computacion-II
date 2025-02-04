@@ -66,4 +66,4 @@ class Init():
     edificio = Edificio(salones, superficies)
     # salon103.CalcularRuido(superficies)
     edificio.determinar_habitabilidad()
-    # edificio.calcular_numero_espacios_habitables()
+    edificio.calcular_numero_espacios_habitables()
