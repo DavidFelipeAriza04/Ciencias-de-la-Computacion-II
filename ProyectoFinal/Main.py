@@ -3,7 +3,7 @@ from Actividad import Actividad
 from Salon import Salon
 from Material import Material
 from Superficie import Superficie
-from manim import InteractiveRadious
+
 class Init():
     actividades = [
         Actividad(45, 55, "Lectura(Biblioteca)"),
@@ -63,7 +63,7 @@ class Init():
         Superficie(escayola, [salon101, salon201], "Techo"),
         Superficie(escayola, [salon102, salon202], "Techo"),
     ]
-    
+
     edificio = Edificio(salones, superficies)
     salon103.CalcularRuido(superficies)
     edificio.determinar_habilidad()
