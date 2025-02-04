@@ -6,14 +6,12 @@ class Salon:
     actividad = None
     habitable = ""
     salonesAdyacentes = []
-    maximoPermisible = 0.0
     piso = 0
     id = 0
 
-    def __init__(self, actividad, salonesAdyacentes, maximoPermisible, piso, id):
+    def __init__(self, actividad, salonesAdyacentes, piso, id):
         self.actividad = actividad
         self.salonesAdyacentes = salonesAdyacentes
-        self.maximoPermisible = maximoPermisible
         self.piso = piso
         self.id = id
 
@@ -63,11 +61,13 @@ class Salon:
 
     def DeterminarHabitabilidad(self, superficies):
         sonidoEntrante, frecuencia = self.CalcularRuido(superficies)
-        if sonidoEntrante <= self.maximoPermisible - 10:
+        if sonidoEntrante <= self.actividad.maximoPermisible - 10:
             self.habitable = "GREEN"
-        elif sonidoEntrante <= self.maximoPermisible + 20:
+        elif sonidoEntrante <= self.actividad.maximoPermisible + 20:
             self.habitable = "YELLOW"
         else:
             self.habitable = "RED"
         print(f"El salon {self.id} es habitable: {self.habitable}")
-        print(f"- Actividad: {self.actividad.nombre}\n- Maximo Permisible: {self.maximoPermisible} \n- Intensidad de ruido: {sonidoEntrante}")
+        print(
+            f"- Actividad: {self.actividad.nombre}\n- Maximo Permisible: {self.actividad.maximoPermisible} \n- Intensidad de ruido: {sonidoEntrante}"
+        )

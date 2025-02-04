@@ -6,12 +6,12 @@ from Superficie import Superficie
 
 class Init():
     actividades = [
-        Actividad(40, 100, "Lectura(Biblioteca)"),
-        Actividad(50, 100, "Seminario"),
-        Actividad(55, 250, "Clases Magistrales"),
-        Actividad(70, 100, "Exámenes"),
-        Actividad(60, 400, "Salones de esparcimiento"),
-        Actividad(80, 500, "Construcción"),
+        Actividad(40, 100, "Lectura(Biblioteca)", 50),
+        Actividad(50, 100, "Seminario", 55),
+        Actividad(55, 250, "Clases Magistrales", 60),
+        Actividad(70, 100, "Exámenes", 65),
+        Actividad(60, 400, "Salones de esparcimiento", 100),
+        Actividad(80, 500, "Construcción", 1000),
     ]
 
     hormigon = Material(
@@ -41,12 +41,12 @@ class Init():
         "Escayola", "GREY"
     )
 
-    salon101 = Salon(actividades[0], [], 50, 1, 101)
-    salon102 = Salon(actividades[2], [], 60, 1, 102)
-    salon103 = Salon(actividades[3], [], 65, 1, 103)
-    salon104 = Salon(actividades[1], [], 55, 1, 104)
-    salon201 = Salon(actividades[4], [], 100, 2, 201)
-    salon202 = Salon(actividades[1], [], 55, 2, 202)
+    salon101 = Salon(actividades[0], [],1, 101)
+    salon102 = Salon(actividades[2], [], 1, 102)
+    salon103 = Salon(actividades[3], [], 1, 103)
+    salon104 = Salon(actividades[1], [], 1, 104)
+    salon201 = Salon(actividades[4], [], 2, 201)
+    salon202 = Salon(actividades[1], [], 2, 202)
 
     salones = [salon101, salon102, salon103, salon104, salon201, salon202]
 
