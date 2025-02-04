@@ -54,6 +54,7 @@ class InteractiveRadious(ThreeDScene):
             lines.add(line)
 
         self.add(cursor_dot, dots,lines,labels)
+        #self.add(dots, lines, labels)
         # Ajustar cámara 3D
         self.set_camera_orientation(phi=75 * DEGREES, theta=30 * DEGREES)
         
