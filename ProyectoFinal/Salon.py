@@ -71,3 +71,5 @@ class Salon:
         print(
             f"- Actividad: {self.actividad.nombre}\n- Maximo Permisible: {self.actividad.maximoPermisible} \n- Intensidad de ruido: {sonidoEntrante}"
         )
+        
+        return (self.habitable == "GREEN") or (self.habitable == "YELLOW")
