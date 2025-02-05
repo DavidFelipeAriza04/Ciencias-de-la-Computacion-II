@@ -1,6 +1,14 @@
+import random as rnd
+
+PORCENTAJE_HABITABILIDAD = 0.6
+
 class Edificio:
     salones = []
     superficies = []
+    recomendaciones = {
+        "YELLOW" : ["Es recomendable instalar una capa de páneles de espuma acústica para disminuir el ruido", "Se sugiere usar páneles de yeso acústico"],
+        "RED" : "La estructura no es adecuada para habitabilidad, se recomienda realizar una reestructuración."
+    }
 
     def __init__(self, salones, superficies):
         self.salones = salones
@@ -34,7 +42,6 @@ class Edificio:
     def determinar_habitabilidad(self):
         salonesHabitables = [0, 0, 0]
         for salon in self.salones:
-            # print(salon)
             salon.DeterminarHabitabilidad(self.superficies)
             if salon.habitable == "GREEN":
                 salonesHabitables[0] += 1
@@ -42,16 +49,55 @@ class Edificio:
                 salonesHabitables[1] += 1
             else:
                 salonesHabitables[2] += 1
+
         # if the percentage of habitable rooms is > 70%, the building is habitable.
-        if (salonesHabitables[0] + salonesHabitables[1]) / len(self.salones) >= 0.7:
-            print(f"-------------- \nEl edificio es habitable")
+        if (salonesHabitables[0] + salonesHabitables[1]) / len(self.salones) >= PORCENTAJE_HABITABILIDAD:
             return True
         else:
-            print(f"-------------- \nEl edificio no es habitable")
             return False
     
+    def imprimir_recomendaciones(self):
+        salonesHabitables = [0, 0, 0]
+        for salon in self.salones:
+            salon.DeterminarHabitabilidad(self.superficies)
+            if salon.habitable == "GREEN":
+                salonesHabitables[0] += 1
+            elif salon.habitable == "YELLOW":
+                print(f"Para el salon {salon.id} {self.recomendaciones["YELLOW"][rnd.randint(0,1)]}")
+                salonesHabitables[1] += 1
+            else:
+                print(f"Para el salon {salon.id} {self.recomendaciones["RED"]}")
+                salonesHabitables[2] += 1
+
+        if (salonesHabitables[0] + salonesHabitables[1]) / len(self.salones) >= PORCENTAJE_HABITABILIDAD:
+            print("El edificio es habitable")
+        else:
+            print("El edificio no habitable")
+
     def reorganizar_actividades(self):
         actividades = [salon.actividad for salon in self.salones]
+
+        n = len(actividades) # Número total de actividades
+
+        best_permutation = []
+
+        def bactracking(start):
+            nonlocal best_permutation
+
+            for i,salon in enumerate(self.salones):
+                salon.actividad = actividades[i]
+                
+            if self.determinar_habitabilidad():
+                best_permutation = actividades[:]
+                return
+            
+            for i in range(start,n):
+                actividades[start],actividades[i] = actividades[i],actividades[start]
+                bactracking(start+1)
+                actividades[start],actividades[i] = actividades[i],actividades[start]
+        
+        bactracking(0)
+        self.imprimir_recomendaciones()
 
     def calcular_numero_espacios_habitables(self):
         self.determinar_habitabilidad()

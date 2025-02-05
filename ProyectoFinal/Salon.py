@@ -54,11 +54,11 @@ class Salon:
         intensidad = sum([10 ** (db / 10) for db in intensidadesEntrantes])
         intensidad = 10 * math.log10(intensidad)
         sonidoEntrante = intensidad * math.log10(1 / coeficienteAbsorcion)
-        print(
-            f"El ruido en el salon {self.id} es de {sonidoEntrante} con una frecuencia de {frecuencia}"
-        )
+# #        print(
+#             f"El ruido en el salon {self.id} es de {sonidoEntrante} con una frecuencia de {frecuencia}"
+#         )
         return sonidoEntrante, frecuencia
-
+    
     def DeterminarHabitabilidad(self, superficies):
         sonidoEntrante, frecuencia = self.CalcularRuido(superficies)
         if sonidoEntrante <= self.actividad.maximoPermisible - 10:
@@ -67,9 +67,9 @@ class Salon:
             self.habitable = "YELLOW"
         else:
             self.habitable = "RED"
-        print(f"El salon {self.id} es habitable: {self.habitable}")
-        print(
-            f"- Actividad: {self.actividad.nombre}\n- Maximo Permisible: {self.actividad.maximoPermisible} \n- Intensidad de ruido: {sonidoEntrante}"
-        )
+#       print(f"El salon {self.id} es habitable: {self.habitable}")
+#      print(
+#            f"- Actividad: {self.actividad.nombre}\n- Maximo Permisible: {self.actividad.maximoPermisible} \n- Intensidad de ruido: {sonidoEntrante}"
+#        )
         
         return (self.habitable == "GREEN") or (self.habitable == "YELLOW")

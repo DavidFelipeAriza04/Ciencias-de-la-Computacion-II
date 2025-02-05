@@ -3,13 +3,18 @@ import numpy as np
 from Main import Init
 
 class InteractiveRadious(ThreeDScene):
+
     def construct(self):
-        init = Init()
+        self.init = Init()
+        update = self.update
+        init = self.init
         init.edificio.determinar_habitabilidad()
 
         classrooms = init.edificio.salones
         surfaces = init.edificio.superficies
 
+        init.edificio.imprimir_recomendaciones()
+        
         # Punto interactivo
         cursor_dot = Dot3D().move_to([3, 2, 0])  # Usar Dot3D para puntos en 3D
 
@@ -34,7 +39,7 @@ class InteractiveRadious(ThreeDScene):
             index+=1
 
         # Crear puntos visi.bles
-        dots = VGroup(*[Dot3D(point=point, color=classrooms[index].habitable) for index,point in enumerate(points)])
+        self.dots = VGroup(*[Dot3D(point=point, color=classrooms[index].habitable) for index,point in enumerate(points)])
 
         # Crear las etiquetas para los puntos
         labels = VGroup(*[
@@ -53,7 +58,7 @@ class InteractiveRadious(ThreeDScene):
             line = Line3D(start=points[index1], end=points[index2], color=surface.material.color)
             lines.add(line)
 
-        self.add(cursor_dot, dots,lines,labels)
+        self.add(cursor_dot, self.dots,lines,labels)
         #self.add(dots, lines, labels)
         # Ajustar cámara 3D
         self.set_camera_orientation(phi=75 * DEGREES, theta=30 * DEGREES)
@@ -61,6 +66,33 @@ class InteractiveRadious(ThreeDScene):
         self.cursor_dot = cursor_dot
 
         self.interactive_embed()
+
+    def update(self, classrooms):
+        self.remove(self.dots)
+        self.init.edificio.reorganizar_actividades()
+        name_classrooms = [str(classroom.id) for classroom in self.init.salones]
+        points = []
+
+        z_value = 0
+        x_value = 0
+        y_value = 0
+        index = 0
+        for name_classroom in name_classrooms:
+            if z_value == int(name_classroom[0])-1:
+                x_value = index // 2
+                y_value = index % 2
+            else:
+                z_value = int(name_classroom[0]) -1
+                x_value = 0
+                y_value = 0
+                index=0
+            points.append([x_value,y_value,z_value])
+            index+=1
+
+        # Crear puntos visi.bles
+        dots = VGroup(*[Dot3D(point=point, color=classrooms[index].habitable) for index,point in enumerate(points)])
+        self.add(dots)
+        
 
     def on_key_press(self, symbol, modifiers):
         from pyglet.window import key as pyglet_key

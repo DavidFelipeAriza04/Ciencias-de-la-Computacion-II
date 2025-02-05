@@ -59,9 +59,10 @@ class Init():
 
     superficies = [
         Superficie(hormigon, [salon101, salon102], "Pared"),
-        Superficie(ladrillo, [salon103, salon104], "Pared"),
+        Superficie(vidrio, [salon103, salon104], "Pared"),
         Superficie(escayola, [salon101, salon201], "Techo"),
         Superficie(escayola, [salon102, salon202], "Techo"),
+        Superficie(hormigon, [salon201, salon202], "Pared")
     ]
 
     edificio = Edificio(salones, superficies)
