@@ -14,7 +14,7 @@ class Salon:
         self.salonesAdyacentes = salonesAdyacentes
         self.piso = piso
         self.id = id
-
+    
     def CalcularRuido(self, superficies):
         intensidadesEntrantes = []
         frecuenciasEntrantes = []
@@ -22,6 +22,7 @@ class Salon:
             intensidadesEntrantes.append(salon.actividad.intensidad)
             frecuenciasEntrantes.append(salon.actividad.frecuencia)
         frecuencia = sum(frecuenciasEntrantes) / len(frecuenciasEntrantes)
+
         if frecuencia in range(100):
             frecuencia = "100"
         elif frecuencia in range(250):
@@ -36,18 +37,9 @@ class Salon:
             frecuencia = "4000"
         coeficienteAbsorcion = 0
         for superficie in superficies:
-            if (
-                superficie.salonesSeparados[0] == self
-                or superficie.salonesSeparados[1] == self
-            ):
-                # print(
-                #     f"Salon {self.id} adyacente a {superficie.salonesSeparados[0].id}"
-                #     if superficie.salonesSeparados[1] == self
-                #     else f"Salon {self.id} adyacente a {superficie.salonesSeparados[1].id}"
-                # )
-                coeficienteAbsorcion += superficie.material.coeficienteAbsorcion[
-                    frecuencia
-                ]
+            coeficienteAbsorcion += superficie.material.coeficienteAbsorcion[
+                frecuencia
+            ]
         # Revisar
         coeficienteAbsorcion /= len(superficies)
         # Revisar
@@ -67,9 +59,4 @@ class Salon:
             self.habitable = "YELLOW"
         else:
             self.habitable = "RED"
-#       print(f"El salon {self.id} es habitable: {self.habitable}")
-#      print(
-#            f"- Actividad: {self.actividad.nombre}\n- Maximo Permisible: {self.actividad.maximoPermisible} \n- Intensidad de ruido: {sonidoEntrante}"
-#        )
-        
         return (self.habitable == "GREEN") or (self.habitable == "YELLOW")
