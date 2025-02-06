@@ -1,10 +1,23 @@
 import random as rnd
+from Superficie import Superficie
+from Salon import Salon
 
 PORCENTAJE_HABITABILIDAD = 0.6
+
+def determinar_superficies_adyacentes(salones: list[Salon], superficies: list[Superficie]) \
+    -> dict[Salon,list[Superficie]]:
+    out:dict[Salon,list[Superficie]] = {}
+    for salon in salones:
+        for superficie in superficies:
+            ss = superficie.salonesSeparados
+            if ss[0] == salon or ss[1] == salon:
+                out[salon] = superficie
+    return out
 
 class Edificio:
     salones = []
     superficies = []
+    superficies_adyacentes = {}
     recomendaciones = {
         "YELLOW" : ["Es recomendable instalar una capa de páneles de espuma acústica para disminuir el ruido", "Se sugiere usar páneles de yeso acústico"],
         "RED" : "La estructura no es adecuada para habitabilidad, se recomienda realizar una reestructuración."
@@ -13,6 +26,8 @@ class Edificio:
     def __init__(self, salones, superficies):
         self.salones = salones
         self.superficies = superficies
+        self.superficies_adyacentes = determinar_superficies_adyacentes(salones, superficies)
+        
         self.matriz_conexiones = [
             [0 for _ in range(len(salones))] for _ in range(len(salones))
         ]
@@ -42,7 +57,7 @@ class Edificio:
     def determinar_habitabilidad(self):
         salonesHabitables = [0, 0, 0]
         for salon in self.salones:
-            salon.DeterminarHabitabilidad(self.superficies)
+            salon.DeterminarHabitabilidad(self.superficies_adyacentes[salon])
             if salon.habitable == "GREEN":
                 salonesHabitables[0] += 1
             elif salon.habitable == "YELLOW":
@@ -59,7 +74,7 @@ class Edificio:
     def imprimir_recomendaciones(self):
         salonesHabitables = [0, 0, 0]
         for salon in self.salones:
-            salon.DeterminarHabitabilidad(self.superficies)
+            salon.DeterminarHabitabilidad(self.superficies_adyacentes[salon])
             if salon.habitable == "GREEN":
                 salonesHabitables[0] += 1
             elif salon.habitable == "YELLOW":
@@ -112,3 +127,4 @@ class Edificio:
         print(
             f"Salones habitables: {salonesHabitables[0] + salonesHabitables[1]} de {len(self.salones)}"
         )
+
