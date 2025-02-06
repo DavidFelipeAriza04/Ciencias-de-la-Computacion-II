@@ -1,6 +1,14 @@
 import math
 from Actividad import Actividad
 
+# Frecuencias estándar para coeficientes de absorción
+frecuencias_estandar = [100, 250, 500, 1000, 2000, 4000]
+
+def aproximar_frecuencia(frecuencia):
+    """
+    Aproxima una frecuencia dada a las frecuencias estándar.
+    """
+    return min(frecuencias_estandar, key=lambda x: abs(x - frecuencia))
 
 class Salon:
     actividad = None
@@ -38,7 +46,7 @@ class Salon:
         coeficienteAbsorcion = 0
         for superficie in superficies:
             coeficienteAbsorcion += superficie.material.coeficienteAbsorcion[
-                frecuencia
+                str(aproximar_frecuencia(int(frecuencia)))
             ]
         # Revisar
         coeficienteAbsorcion /= len(superficies)

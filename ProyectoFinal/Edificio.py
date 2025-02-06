@@ -2,16 +2,20 @@ import random as rnd
 from Superficie import Superficie
 from Salon import Salon
 
-PORCENTAJE_HABITABILIDAD = 0.6
+PORCENTAJE_HABITABILIDAD = 0.7
 
 def determinar_superficies_adyacentes(salones: list[Salon], superficies: list[Superficie]) \
-    -> dict[Salon,list[Superficie]]:
-    out:dict[Salon,list[Superficie]] = {}
+    -> dict[Salon, list[Superficie]]:
+
+    out: dict[Salon, list[Superficie]] = {}
     for salon in salones:
         for superficie in superficies:
             ss = superficie.salonesSeparados
             if ss[0] == salon or ss[1] == salon:
-                out[salon] = superficie
+                if salon not in out:
+                    out[salon] = [superficie]
+                out[salon].append(superficie)
+
     return out
 
 class Edificio:

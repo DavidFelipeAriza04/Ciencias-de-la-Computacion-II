@@ -1,3 +1,4 @@
+import random
 from Edificio import Edificio
 from Actividad import Actividad
 from Salon import Salon
@@ -41,31 +42,62 @@ class Init():
         "Escayola", "GREY"
     )
 
-    salon101 = Salon(actividades[0], [],1, 101)
-    salon102 = Salon(actividades[2], [], 1, 102)
-    salon103 = Salon(actividades[3], [], 1, 103)
-    salon104 = Salon(actividades[1], [], 1, 104)
-    salon201 = Salon(actividades[4], [], 2, 201)
-    salon202 = Salon(actividades[1], [], 2, 202)
+    # Generar salones y asignar actividades aleatorias
+    salones = []
+    materiales = [hormigon, vidrio, ladrillo, escayola]
+    for piso in range(1, 3):  # Cambiado a solo 2 pisos: 1 y 2
+        for id in range(1, 13):  # Salones del 101 al 108, 201 al 208
+            actividad = random.choice(actividades)
+            salon = Salon(actividad, [], piso, piso * 100 + id)
+            salones.append(salon)
 
-    salones = [salon101, salon102, salon103, salon104, salon201, salon202]
+    # Crear diccionario para acceso rápido por número de salón
+    salon_dict = {salon.id: salon for salon in salones}
 
-    salon101.salonesAdyacentes = [salon102, salon201]
-    salon102.salonesAdyacentes = [salon101, salon202]
-    salon103.salonesAdyacentes = [salon104]
-    salon104.salonesAdyacentes = [salon103]
-    salon201.salonesAdyacentes = [salon202, salon101]
-    salon202.salonesAdyacentes = [salon201, salon102]
+    # Asignar salones adyacentes
+    for salon in salones:
+        piso = salon.piso
+        numero = salon.id % 100
+        adyacentes = []
 
-    superficies = [
-        Superficie(hormigon, [salon101, salon102], "Pared"),
-        Superficie(vidrio, [salon103, salon104], "Pared"),
-        Superficie(escayola, [salon101, salon201], "Techo"),
-        Superficie(escayola, [salon102, salon202], "Techo"),
-        Superficie(hormigon, [salon201, salon202], "Pared")
-    ]
+        '''
+        # Salón a la izquierda
+        if numero > 1 and (piso * 100 + (numero - 2)) in salon_dict:
+            adyacentes.append(salon_dict[piso * 100 + (numero - 2)])
+        # Salón a la derecha
+        if numero < 12 and (piso * 100 + (numero + 2)) in salon_dict:
+            adyacentes.append(salon_dict[piso * 100 + (numero + 2)])
+        '''
+        # Salón a la izquierda
+        if numero > 1 and numero % 2 == 0:
+            adyacentes.append(salon_dict[piso * 100 + (numero - 1)])
+        # Salón a la derecha
+        if numero < 12 and numero % 2 == 1:
+            adyacentes.append(salon_dict[piso * 100 + (numero + 1)])
+        if (piso * 100 + (numero + 2)) in salon_dict and numero %2 == 0:
+            pass
+            #adyacentes.append(salon_dict[piso * 100 + (numero + 2)])
+        # Salón arriba
+        if piso < 2:
+            adyacentes.append(salon_dict[(piso + 1) * 100 + numero])
+        # Salón abajo
+        if piso > 1:
+            adyacentes.append(salon_dict[(piso - 1) * 100 + numero])
+
+        salon.salonesAdyacentes = adyacentes
+
+    # Crear superficies
+    superficies = []
+
+    for salon in salones:
+        for adyacente in salon.salonesAdyacentes:
+            if salon.id < adyacente.id:  # Evitar duplicados
+                material = random.choice(materiales)
+                tipo = "Pared" if salon.piso == adyacente.piso else "Techo"
+                superficies.append(Superficie(material, [salon, adyacente], tipo))
 
     edificio = Edificio(salones, superficies)
     # salon103.CalcularRuido(superficies)
     edificio.determinar_habitabilidad()
     edificio.calcular_numero_espacios_habitables()
+    #edificio.reorganizar_actividades()

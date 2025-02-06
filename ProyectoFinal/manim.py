@@ -43,7 +43,7 @@ class InteractiveRadious(ThreeDScene):
 
         # Crear las etiquetas para los puntos
         labels = VGroup(*[
-            Text(f"{name_classrooms[index]}", font_size=18).next_to(point, RIGHT) 
+            Text(f"{name_classrooms[index]}", font_size=13).next_to(point, RIGHT) 
             for index, point in enumerate(points)
         ])
 
