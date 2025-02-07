@@ -1,6 +1,8 @@
 import random as rnd
 from Superficie import Superficie
 from Salon import Salon
+import copy
+from collections import deque
 
 PORCENTAJE_HABITABILIDAD = 0.7
 
@@ -93,29 +95,104 @@ class Edificio:
         else:
             print("El edificio no habitable")
 
+    def obtener_grafo_reducido(self, salones):
+        visitados = set()
+        num_salones = len(salones)
+
+        def reducir_grafo(salon):
+            nonlocal visitados, num_salones
+
+            if len(visitados) == num_salones:
+                return 
+
+            visitados.add(salon)
+            adyacentes_a_remover = []
+
+            # Explora todos los adyacentes primero
+            for a in salon.salonesAdyacentes: 
+                if salon.habitable == "GREEN":
+                    adyacentes_a_remover.append(a)
+            
+                if a.habitable == "GREEN" and salon.habitable != "GREEN":
+                    adyacentes_a_remover.append(a)
+
+                if a not in visitados:
+                    reducir_grafo(a)
+
+            # Remueve los adyacentes verdes después del recorrido
+            for a in adyacentes_a_remover:
+                salon.salonesAdyacentes.remove(a)
+
+        salones_copia = copy.deepcopy(salones)   
+        print(len(salones_copia))
+
+        reducir_grafo(salones_copia[0])
+        reducir_grafo(salones_copia[1]) 
+        salones_copia = [s for s in salones_copia if s.habitable != "GREEN"]  
+
+        print(len(salones_copia))
+        x = self.encontrar_subgrafos(salones_copia)
+
+        print(len(x))
+        for i in x:
+            print(f"Tamaño subgrafos {len(i)}")
+        return salones_copia
+    
+    def encontrar_subgrafos(self,salones):
+        salones_recorridos = set()
+        subgrafos = []
+
+        def BFS(nodo):
+            nonlocal salones_recorridos
+            cola = deque()
+            subgrafo = set()
+
+            cola.append(nodo)
+            subgrafo.add(nodo)
+
+            while cola:
+                s = cola.pop()
+
+                for adj in s.salonesAdyacentes:
+                    if adj not in subgrafo:
+                        subgrafo.add(adj)
+                        salones_recorridos.add(adj)
+                        cola.append(adj)
+            
+            return subgrafo
+        
+        for salon in salones:
+            if salon not in salones_recorridos:
+                subgrafos.append(BFS(salon))
+        
+        return subgrafos
+
+        
     def reorganizar_actividades(self):
         actividades = [salon.actividad for salon in self.salones]
-
-        n = len(actividades) # Número total de actividades
-
+        n = len(actividades)  # Número total de actividades
         best_permutation = []
+        contador = [0]  # Usamos una lista para modificar el valor dentro de la función
 
         def bactracking(start):
             nonlocal best_permutation
-
-            for i,salon in enumerate(self.salones):
+            contador[0] += 1  # Incrementar el contador en cada llamada
+            print(f"Número total de llamadas a bactracking: {contador[0]}")
+            for i, salon in enumerate(self.salones):
                 salon.actividad = actividades[i]
-                
+
             if self.determinar_habitabilidad():
                 best_permutation = actividades[:]
                 return
-            
-            for i in range(start,n):
-                actividades[start],actividades[i] = actividades[i],actividades[start]
-                bactracking(start+1)
-                actividades[start],actividades[i] = actividades[i],actividades[start]
-        
+
+            for i in range(start, n):
+                actividades[start], actividades[i] = actividades[i], actividades[start]
+                bactracking(start + 1)
+                actividades[start], actividades[i] = actividades[i], actividades[start]
+
+
         bactracking(0)
+
         self.imprimir_recomendaciones()
 
     def calcular_numero_espacios_habitables(self):
@@ -131,4 +208,5 @@ class Edificio:
         print(
             f"Salones habitables: {salonesHabitables[0] + salonesHabitables[1]} de {len(self.salones)}"
         )
+
 

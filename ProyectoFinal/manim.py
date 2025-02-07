@@ -25,7 +25,7 @@ class InteractiveRadious(ThreeDScene):
         z_value = 0
         x_value = 0
         y_value = 0
-        index = 0
+        index = 0 
         for name_classroom in name_classrooms:
             if z_value == int(name_classroom[0])-1:
                 x_value = index // 2

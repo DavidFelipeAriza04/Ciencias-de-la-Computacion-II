@@ -44,9 +44,9 @@ class Init():
 
     # Generar salones y asignar actividades aleatorias
     salones = []
-    materiales = [hormigon, vidrio, ladrillo, escayola]
+    materiales = [hormigon, vidrio, ladrillo]
     for piso in range(1, 3):  # Cambiado a solo 2 pisos: 1 y 2
-        for id in range(1, 13):  # Salones del 101 al 108, 201 al 208
+        for id in range(1, 17):  # Salones del 101 al 108, 201 al 208
             actividad = random.choice(actividades)
             salon = Salon(actividad, [], piso, piso * 100 + id)
             salones.append(salon)
@@ -60,12 +60,12 @@ class Init():
         numero = salon.id % 100
         adyacentes = []
 
-        '''
+        
         # Salón a la izquierda
         if numero > 1 and (piso * 100 + (numero - 2)) in salon_dict:
             adyacentes.append(salon_dict[piso * 100 + (numero - 2)])
         # Salón a la derecha
-        if numero < 12 and (piso * 100 + (numero + 2)) in salon_dict:
+        if numero < 16 and (piso * 100 + (numero + 2)) in salon_dict:
             adyacentes.append(salon_dict[piso * 100 + (numero + 2)])
         '''
         # Salón a la izquierda
@@ -77,6 +77,7 @@ class Init():
         if (piso * 100 + (numero + 2)) in salon_dict and numero %2 == 0:
             pass
             #adyacentes.append(salon_dict[piso * 100 + (numero + 2)])
+        '''
         # Salón arriba
         if piso < 2:
             adyacentes.append(salon_dict[(piso + 1) * 100 + numero])
@@ -92,12 +93,13 @@ class Init():
     for salon in salones:
         for adyacente in salon.salonesAdyacentes:
             if salon.id < adyacente.id:  # Evitar duplicados
-                material = random.choice(materiales)
                 tipo = "Pared" if salon.piso == adyacente.piso else "Techo"
+                material = escayola if tipo == "Techo" else random.choice(materiales)
                 superficies.append(Superficie(material, [salon, adyacente], tipo))
 
     edificio = Edificio(salones, superficies)
     # salon103.CalcularRuido(superficies)
     edificio.determinar_habitabilidad()
     edificio.calcular_numero_espacios_habitables()
+    edificio.obtener_grafo_reducido(salones)
     #edificio.reorganizar_actividades()
