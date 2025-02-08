@@ -98,5 +98,3 @@ class Init:
                     tipo = "Pared" if salon.piso == adyacente.piso else "Techo"
                     material = self.escayola if tipo == "Techo" else random.choice(materiales)
                     superficies.append(Superficie(material, [salon, adyacente], tipo))
-
-        return salones, superficies
