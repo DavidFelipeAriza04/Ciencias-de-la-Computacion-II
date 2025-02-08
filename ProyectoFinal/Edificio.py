@@ -91,18 +91,18 @@ class Edificio:
             idxs[color].append(i)
 
 # metodo 1: reorganizar listas separadas (eficiente, no mejora tanto la habitabilidad)
-#       self.__reorder(idxs["RED"])
-#     self.__reorder(idxs["YELLOW"])        
-#      self.__reorder(idxs["GREEN"])
+#        self.__reorder(idxs["RED"])
+#       self.__reorder(idxs["YELLOW"])        
+#       self.__reorder(idxs["GREEN"])
 
 # metodo 2: reorganizar toda la lista (bastante mas complejo, mejora 
         self.__reorder([i for i in range(len(self.salones))])
 
     
     def imprimir_recomendaciones(self):
+        print("XDXD")
         salonesHabitables = [0, 0, 0]
         for salon in self.salones:
-            salon.DeterminarHabitabilidad(self.superficies_adyacentes[salon])
             if salon.habitable == "GREEN":
                 salonesHabitables[0] += 1
             elif salon.habitable == "YELLOW":

@@ -2,10 +2,27 @@ from manim import *
 import numpy as np
 from Main import Init
 
+def obtener_puntos(name_classrooms):
+    points = []
+
+    z_value,x_value,y_value,index = 0,0,0,0
+
+    for name_classroom in name_classrooms:
+        if z_value == int(name_classroom[0])-1:
+            x_value = index // 2
+            y_value = index % 2
+        else:
+            z_value = int(name_classroom[0]) -1
+            x_value,y_value,index = 0,0,0
+        points.append([x_value,y_value,z_value])
+        index+=1
+    
+    return points
+
 class InteractiveRadious(ThreeDScene):
 
     def construct(self):
-        self.init = Init(2,14)
+        self.init = Init(3,8) #Piso, #Numero por piso
         update = self.update
         init = self.init
         init.edificio.determinar_habitabilidad()
@@ -20,23 +37,7 @@ class InteractiveRadious(ThreeDScene):
 
         #Obtener ID
         name_classrooms = [str(classroom.id) for classroom in init.salones]
-        points = []
-
-        z_value = 0
-        x_value = 0
-        y_value = 0
-        index = 0 
-        for name_classroom in name_classrooms:
-            if z_value == int(name_classroom[0])-1:
-                x_value = index // 2
-                y_value = index % 2
-            else:
-                z_value = int(name_classroom[0]) -1
-                x_value = 0
-                y_value = 0
-                index=0
-            points.append([x_value,y_value,z_value])
-            index+=1
+        points = obtener_puntos(name_classrooms)
 
         # Crear puntos visi.bles
         self.dots = VGroup(*[Dot3D(point=point, color=classrooms[index].habitable) for index,point in enumerate(points)])
@@ -69,29 +70,14 @@ class InteractiveRadious(ThreeDScene):
 
     def update(self, classrooms):
         self.remove(self.dots)
-        self.init.edificio.reorganizar_actividades()
+        self.init.edificio._reorganizar_actividades()
         name_classrooms = [str(classroom.id) for classroom in self.init.salones]
-        points = []
-
-        z_value = 0
-        x_value = 0
-        y_value = 0
-        index = 0
-        for name_classroom in name_classrooms:
-            if z_value == int(name_classroom[0])-1:
-                x_value = index // 2
-                y_value = index % 2
-            else:
-                z_value = int(name_classroom[0]) -1
-                x_value = 0
-                y_value = 0
-                index=0
-            points.append([x_value,y_value,z_value])
-            index+=1
+        points = obtener_puntos(name_classrooms)
 
         # Crear puntos visi.bles
         dots = VGroup(*[Dot3D(point=point, color=classrooms[index].habitable) for index,point in enumerate(points)])
         self.add(dots)
+        self.init.edificio.imprimir_recomendaciones()
         
 
     def on_key_press(self, symbol, modifiers):

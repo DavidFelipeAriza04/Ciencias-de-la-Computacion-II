@@ -18,7 +18,6 @@ class Init:
         # Realizar operaciones sobre el edificio
         self.edificio.determinar_habitabilidad()
         self.edificio.calcular_numero_espacios_habitables()
-        self.edificio.obtener_grafo_reducido(self.salones)
 
     actividades = [
         Actividad(40, 100, "Lectura(Biblioteca)", 50),
@@ -75,11 +74,18 @@ class Init:
             adyacentes = []
 
             # Salón a la izquierda
-            if numero > 1 and (piso * 100 + (numero - 2)) in salon_dict:
+            if numero > 1 and numero % 2 == 0:
+                adyacentes.append(salon_dict[piso * 100 + (numero - 1)])
+
+            if (piso * 100 + (numero - 2)) in salon_dict:
                 adyacentes.append(salon_dict[piso * 100 + (numero - 2)])
             # Salón a la derecha
-            if numero < numero_salones_por_piso and (piso * 100 + (numero + 2)) in salon_dict:
+            if numero < numero_salones_por_piso and numero % 2 == 1:
+                adyacentes.append(salon_dict[piso * 100 + (numero + 1)])
+
+            if (piso * 100 + (numero + 2)) in salon_dict:
                 adyacentes.append(salon_dict[piso * 100 + (numero + 2)])
+                
             # Salón arriba
             if piso < numero_pisos:
                 adyacentes.append(salon_dict[(piso + 1) * 100 + numero])
@@ -98,3 +104,5 @@ class Init:
                     tipo = "Pared" if salon.piso == adyacente.piso else "Techo"
                     material = self.escayola if tipo == "Techo" else random.choice(materiales)
                     superficies.append(Superficie(material, [salon, adyacente], tipo))
+
+        return salones,superficies
