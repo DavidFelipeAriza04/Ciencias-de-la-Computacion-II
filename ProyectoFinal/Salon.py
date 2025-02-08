@@ -58,8 +58,8 @@ class Salon:
 #             f"El ruido en el salon {self.id} es de {sonidoEntrante} con una frecuencia de {frecuencia}"
 #         )
         return sonidoEntrante, frecuencia
-    
-    def DeterminarHabitabilidad(self, superficies):
+
+    def _DeterminarHabitabilidad(self, superficies):
         sonidoEntrante, frecuencia = self.CalcularRuido(superficies)
         if sonidoEntrante <= self.actividad.maximoPermisible - 10:
             self.habitable = "GREEN"
@@ -67,4 +67,8 @@ class Salon:
             self.habitable = "YELLOW"
         else:
             self.habitable = "RED"
-        return (self.habitable == "GREEN") or (self.habitable == "YELLOW")
+        return self.habitable
+    
+    def DeterminarHabitabilidad(self, superficies):
+        color = self._DeterminarHabitabilidad(superficies)
+        return (color == "GREEN") or (color == "YELLOW")
