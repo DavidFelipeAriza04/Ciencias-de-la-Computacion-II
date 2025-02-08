@@ -5,7 +5,7 @@ from Main import Init
 class InteractiveRadious(ThreeDScene):
 
     def construct(self):
-        self.init = Init()
+        self.init = Init(2,14)
         update = self.update
         init = self.init
         init.edificio.determinar_habitabilidad()
