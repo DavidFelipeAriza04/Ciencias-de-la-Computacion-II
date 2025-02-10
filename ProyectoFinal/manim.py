@@ -30,7 +30,7 @@ class InteractiveRadious(ThreeDScene):
         classrooms = init.edificio.salones
         surfaces = init.edificio.superficies
 
-        init.edificio.imprimir_recomendaciones()
+        # init.edificio.imprimir_recomendaciones()
         
         # Punto interactivo
         cursor_dot = Dot3D().move_to([3, 2, 0])  # Usar Dot3D para puntos en 3D

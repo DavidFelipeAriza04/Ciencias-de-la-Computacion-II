@@ -47,7 +47,7 @@ class Edificio:
                             salones[i].id == superficie.salonesSeparados[0].id
                             and salones[j].id == superficie.salonesSeparados[1].id
                         ):
-                            print(f"Salon {salones[i].id} adyacente a {salones[j].id}")
+                            # print(f"Salon {salones[i].id} adyacente a {salones[j].id}")
                             self.matriz_conexiones[i][j] = superficie.material.nombre
                             self.matriz_conexiones[j][i] = superficie.material.nombre
                             break
@@ -69,6 +69,7 @@ class Edificio:
         return 1 - (noHabitables / len(self.salones))
 
     def determinar_habitabilidad(self):
+        # print("Habitabilidad:", self.calcular_habitabilidad()*100, "%")
         return self.calcular_habitabilidad() >= PORCENTAJE_HABITABILIDAD
 
     def __reorder(self, idxs: list[int]):
@@ -100,7 +101,6 @@ class Edificio:
 
     
     def imprimir_recomendaciones(self):
-        print("XDXD")
         salonesHabitables = [0, 0, 0]
         for salon in self.salones:
             if salon.habitable == "GREEN":
@@ -113,14 +113,14 @@ class Edificio:
                 salonesHabitables[2] += 1
 
         if (salonesHabitables[0] + salonesHabitables[1]) / len(self.salones) >= PORCENTAJE_HABITABILIDAD:
-            print("El edificio es habitable")
+            print(f"El edificio es habitable, porcentaje: {(salonesHabitables[0] + salonesHabitables[1])*100 / len(self.salones)}%")
         else:
-            print("El edificio no habitable")
+            print(f"El edificio no es habitable, porcentaje: {(salonesHabitables[0] + salonesHabitables[1])*100 / len(self.salones)}%")
 
     def calcular_numero_espacios_habitables(self):
         sz = len(self.salones)
         x = self.calcular_habitabilidad() * sz
         print(
-            f"Salones habitables: {x} de {sz}"
+            f"Salones habitables: {x} de {sz}\nPorcentaje de habitabilidad: {x/sz*100}%"
         )
         return x
